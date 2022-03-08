@@ -4,20 +4,9 @@ import { Link, useNavigate } from "react-router-dom";
 const Post = (props) => {
   const navigate = useNavigate();
   const editPostHandler = (id) => {
-    navigate("/postform", { updationId: id, editing: true });
+    navigate("/postform", { state: id, editing: true });
   };
-  const deleteHandler = (id) => {
-    fetch(`http://localhost:8080/user/post/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
-    })
-      .then((res) => res.json())
-      .then((result) => {
-        console.log(result);
-      });
-  };
+
   return (
     <div>
       <li key={props._id}>
@@ -31,21 +20,15 @@ const Post = (props) => {
         >
           View
         </button>
-        {/* <button
+        <button
           onClick={() => {
             editPostHandler(props._id);
           }}
         >
           Edit
-        </button> */}
-        <button>
-          <Link to="/postform" props={"props._id"}>
-            Edit
-          </Link>
         </button>
         <button
           onClick={() => {
-            // deleteHandler(props._id);
             props.onDelete(props._id);
           }}
         >

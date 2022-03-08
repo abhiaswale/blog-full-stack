@@ -8,15 +8,49 @@ const PostForm = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const navigate = useNavigate();
-
   const location = useLocation();
-  //   setIsEditing(location.editing);
-  console.log(location.props);
+
+  let editPost = {
+    title: "",
+    description: "",
+  };
+  const editPostId = location.state;
+  console.log(location.state);
+  const startEditPost = (editPostId) => {
+    setIsEditing(true);
+    fetch(`http://localhost:8080/user/post/${editPostId}`, {
+      method: "GET",
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token"),
+      },
+    })
+      .then((res) => {
+        return res.json();
+      })
+      .then((post) => {
+        editPost = post.post;
+        console.log(editPost);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    if (location.state) {
+      startEditPost(editPostId);
+    }
+  });
 
   const submitHandler = (e) => {
     e.preventDefault();
-    fetch("http://localhost:8080/user/post", {
-      method: "POST",
+    let url = "http://localhost:8080/user/post";
+    let method = "POST";
+    if (isEditing) {
+      url = `http://localhost:8080/user/post/${editPostId}`;
+    }
+    fetch(url, {
+      method: method,
       headers: {
         Authorization: "Bearer " + authCtx.token,
         "Content-Type": "application/json",
@@ -48,7 +82,7 @@ const PostForm = () => {
           onChange={(e) => {
             setTitle(e.target.value);
           }}
-          value={title}
+          value={editPost.title}
         ></input>
         <textarea
           name="description"
@@ -58,7 +92,7 @@ const PostForm = () => {
           onChange={(e) => {
             setDescription(e.target.value);
           }}
-          value={description}
+          value={editPost.description}
         ></textarea>
         <button type="submit">Post</button>
       </form>

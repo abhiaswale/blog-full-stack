@@ -55,25 +55,29 @@ const Login = () => {
     // routes = <StartingPage userId={userId} token={token} />;
   } else {
     routes = (
-      <div>
+      <div className="flex justify-center w-full h-screen items-center bg-sky-200 flex-col">
         <h1>Login</h1>
         <form onSubmit={loginHandler}>
-          <input
-            value={email}
-            type="email"
-            placeholder="Email"
-            onChange={(e) => {
-              setEmail(e.target.value);
-            }}
-          ></input>
-          <input
-            value={password}
-            type="password"
-            placeholder="Password"
-            onChange={(e) => {
-              setPassword(e.target.value);
-            }}
-          ></input>
+          <div>
+            <input
+              value={email}
+              type="email"
+              placeholder="Email"
+              onChange={(e) => {
+                setEmail(e.target.value);
+              }}
+            ></input>
+          </div>
+          <div>
+            <input
+              value={password}
+              type="password"
+              placeholder="Password"
+              onChange={(e) => {
+                setPassword(e.target.value);
+              }}
+            ></input>
+          </div>
           <button type="submit">Submit</button>
         </form>
         <button onClick={newUserHandler}>New user</button>
