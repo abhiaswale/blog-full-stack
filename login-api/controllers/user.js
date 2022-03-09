@@ -63,25 +63,23 @@ exports.getPost = (req, res, next) => {
     });
 };
 
-exports.getUpdatePost = (req, res, next) => {
-  const postId = req.params.postId;
-  console.log(postId);
-  Post.findById(postId)
-    .then((post) => {
-      res.status(200).json({ message: "Post fetched succesfully", post: post });
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-};
-
 exports.updatePost = (req, res, next) => {
   const postId = req.params.postId;
   const updatedTitle = req.body.title;
   const updatedDescription = req.body.description;
   console.log(postId);
   Post.findById(postId)
-    .then((post) => {})
+    .then((post) => {
+      if (post.creator.toString() !== postId) {
+        console.log("Not Authorized");
+      }
+      post.title = updatedTitle;
+      post.description = updatedDescription;
+      return post.save();
+    })
+    .then((result) => {
+      res.status(200).json({ message: "updated successfully", data: result });
+    })
     .catch((err) => {
       console.log(err);
     });

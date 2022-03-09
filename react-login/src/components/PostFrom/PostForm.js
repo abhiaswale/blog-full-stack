@@ -5,15 +5,15 @@ const PostForm = () => {
   const authCtx = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [data, setData] = useState({
+    title: "",
+    description: "",
+  });
   const [isEditing, setIsEditing] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
-  let editPost = {
-    title: "",
-    description: "",
-  };
   const editPostId = location.state;
   console.log(location.state);
   const startEditPost = (editPostId) => {
@@ -28,8 +28,8 @@ const PostForm = () => {
         return res.json();
       })
       .then((post) => {
-        editPost = post.post;
-        console.log(editPost);
+        setData(post.post);
+        console.log(post.post.title);
       })
       .catch((err) => {
         console.log(err);
@@ -40,7 +40,7 @@ const PostForm = () => {
     if (location.state) {
       startEditPost(editPostId);
     }
-  });
+  }, []);
 
   const submitHandler = (e) => {
     e.preventDefault();
@@ -48,6 +48,7 @@ const PostForm = () => {
     let method = "POST";
     if (isEditing) {
       url = `http://localhost:8080/user/post/${editPostId}`;
+      method = "PUT";
     }
     fetch(url, {
       method: method,
@@ -60,8 +61,8 @@ const PostForm = () => {
         description: description,
       }),
     })
-      .then((res) => {
-        return res.json();
+      .then((resp) => {
+        return resp.json();
       })
       .then((data) => {
         console.log(data);
@@ -82,7 +83,7 @@ const PostForm = () => {
           onChange={(e) => {
             setTitle(e.target.value);
           }}
-          value={editPost.title}
+          defaultValue={data.title}
         ></input>
         <textarea
           name="description"
@@ -92,7 +93,7 @@ const PostForm = () => {
           onChange={(e) => {
             setDescription(e.target.value);
           }}
-          value={editPost.description}
+          defaultValue={data.description}
         ></textarea>
         <button type="submit">Post</button>
       </form>
