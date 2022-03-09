@@ -12,11 +12,14 @@ exports.getUserDetail = (req, res, next) => {
 exports.createPost = (req, res, next) => {
   const title = req.body.title;
   const description = req.body.description;
+  const imageUrl = req.file.path.replace("\\", "/");
   console.log(title, description);
+  console.log(req.file);
   let creator;
   const post = new Post({
     title: title,
     description: description,
+    imageUrl: imageUrl,
     creator: req.userId,
   });
   post

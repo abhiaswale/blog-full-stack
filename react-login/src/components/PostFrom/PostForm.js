@@ -5,20 +5,17 @@ const PostForm = () => {
   const authCtx = useContext(AuthContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [data, setData] = useState({
-    title: "",
-    description: "",
-  });
+  const [image, setImage] = useState("");
+  const [preview, setPreview] = useState("");
   const [isEditing, setIsEditing] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
 
   const editPostId = location.state;
-  console.log(location.state);
-  const startEditPost = (editPostId) => {
+  const startEditPost = (postId) => {
     setIsEditing(true);
-    fetch(`http://localhost:8080/user/post/${editPostId}`, {
+    fetch(`http://localhost:8080/user/post/${postId}`, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -28,8 +25,8 @@ const PostForm = () => {
         return res.json();
       })
       .then((post) => {
-        setData(post.post);
-        console.log(post.post.title);
+        setTitle(post.post.title);
+        setDescription(post.post.description);
       })
       .catch((err) => {
         console.log(err);
@@ -40,10 +37,34 @@ const PostForm = () => {
     if (location.state) {
       startEditPost(editPostId);
     }
-  }, []);
+  }, [editPostId]);
+
+  const fileChangeHandler = (e) => {
+    console.log(e.target.files[0]);
+    if (e.target && e.target.files[0]) {
+      setImage(e.target.files[0]);
+    }
+  };
+  useEffect(() => {
+    if (!image) {
+      setPreview(null);
+      return;
+    }
+    const objectUrl = URL.createObjectURL(image);
+    setPreview(objectUrl);
+    return () => {
+      URL.revokeObjectURL(objectUrl);
+    };
+  }, [image]);
 
   const submitHandler = (e) => {
     e.preventDefault();
+
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("description", description);
+    formData.append("image", image);
+
     let url = "http://localhost:8080/user/post";
     let method = "POST";
     if (isEditing) {
@@ -52,14 +73,10 @@ const PostForm = () => {
     }
     fetch(url, {
       method: method,
+      body: formData,
       headers: {
         Authorization: "Bearer " + authCtx.token,
-        "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        title: title,
-        description: description,
-      }),
     })
       .then((resp) => {
         return resp.json();
@@ -75,7 +92,10 @@ const PostForm = () => {
   return (
     <div>
       <h3>Post a blog</h3>
-      <form onSubmit={submitHandler}>
+      <form
+        className="flex justify-center items-center flex-col"
+        onSubmit={submitHandler}
+      >
         <input
           type="text"
           id="name"
@@ -83,8 +103,18 @@ const PostForm = () => {
           onChange={(e) => {
             setTitle(e.target.value);
           }}
-          defaultValue={data.title}
+          defaultValue={title}
+          className="mt-5"
         ></input>
+        <label>Choose a image</label>
+        <input
+          type="file"
+          name="image"
+          id="image"
+          className="mt-5"
+          onChange={fileChangeHandler}
+        ></input>
+        {image && <img src={preview}></img>}
         <textarea
           name="description"
           id="description"
@@ -93,7 +123,8 @@ const PostForm = () => {
           onChange={(e) => {
             setDescription(e.target.value);
           }}
-          defaultValue={data.description}
+          defaultValue={description}
+          className="mt-5"
         ></textarea>
         <button type="submit">Post</button>
       </form>

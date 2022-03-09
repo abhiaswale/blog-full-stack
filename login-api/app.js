@@ -1,14 +1,39 @@
 const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
+const multer = require("multer");
+const { v4: uuid } = require("uuid");
 const app = express();
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
 const { default: mongoose } = require("mongoose");
-
+const path = require("path");
 app.use(cors());
+
+const fileStorage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "images");
+  },
+  filename: (req, file, cb) => {
+    cb(null, uuid());
+  },
+});
+
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg" ||
+    file.mimetype === "image/jpeg"
+  ) {
+    cb(null, true);
+  }
+};
 app.use(bodyParser.json());
+app.use("/images", express.static(path.join(__dirname, "images")));
+app.use(
+  multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
+);
 
 app.use("/auth", authRoutes);
 app.use("/user", userRoutes);

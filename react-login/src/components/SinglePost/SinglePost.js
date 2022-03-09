@@ -4,6 +4,7 @@ import { useParams } from "react-router-dom";
 const SinglePost = () => {
   const { postId } = useParams();
   const [postItem, setPostItem] = useState({});
+  const [postImage, setPostImage] = useState();
   useEffect(() => {
     fetch(`http://localhost:8080/user/post/${postId}`, {
       method: "GET",
@@ -17,6 +18,7 @@ const SinglePost = () => {
       .then((post) => {
         console.log(post);
         setPostItem(post.post);
+        setPostImage("http://localhost:8080/" + post.post.imageUrl);
       })
       .catch((err) => {
         console.log(err);
@@ -31,6 +33,7 @@ const SinglePost = () => {
       <div>
         SinglePost : {postId}
         <h1>{postItem.title}</h1>
+        <img src={postImage} alt="image"></img>
       </div>
     );
   }
