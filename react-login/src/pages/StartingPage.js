@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import Post from "../components/Post/Post";
-import PostForm from "../components/PostFrom/PostForm";
 import AuthContext from "../store/auth-context";
 
 const StartingPage = (props) => {
@@ -9,8 +8,11 @@ const StartingPage = (props) => {
   const authCtx = useContext(AuthContext);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
-  // const [title, setTitle] = useS
   const [posts, setPosts] = useState([]);
+  // const [pageNumber, setPageNumber] = useState(1);
+  // const [numberOfPages, setNumberOfPages] = useState(1);
+
+  // const pages = new Array(numberOfPages).fill(null);
 
   useEffect(() => {
     fetch("http://localhost:8080/user/detail", {
@@ -41,6 +43,7 @@ const StartingPage = (props) => {
       .then((data) => {
         console.log(data);
         setPosts(data.data);
+        // setNumberOfPages(data.pages);
       })
       .catch((err) => {
         console.log(err);
@@ -60,7 +63,6 @@ const StartingPage = (props) => {
     })
       .then((res) => res.json())
       .then((result) => {
-        console.log(result);
         setPosts((prevData) => {
           const updatedPosts = prevData.filter((p) => p._id !== id);
           return updatedPosts;
@@ -73,7 +75,13 @@ const StartingPage = (props) => {
   } else {
     content = (
       <div>
-        <h1>hi {userData.detail.name}</h1>
+        <h1 className="text-6xl font-bold my-8">hi {userData.detail.name}</h1>
+        <div className="mt-52 mx-20">
+          <form>
+            <input type="text" placeholder="Enter Status"></input>
+            <button>Update status</button>
+          </form>
+        </div>
         <button
           onClick={() => {
             navigate("/postform");
@@ -92,6 +100,9 @@ const StartingPage = (props) => {
             />
           ))}
         </section>
+        {/* {pages.map((val, index) => (
+          <button onClick={setPageNumber(index + 1)}>{index + 1}</button>
+        ))} */}
       </div>
     );
   }

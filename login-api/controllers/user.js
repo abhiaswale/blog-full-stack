@@ -1,17 +1,41 @@
 const User = require("../models/user");
 const Post = require("../models/post");
+const { validationResult } = require("express-validator");
 exports.getUserDetail = (req, res, next) => {
   User.findById(req.userId)
     .then((user) => {
       console.log(user);
+      if (!user) {
+        const error = new Error("No user Found!");
+        error.statusCode = 404;
+        throw error;
+      }
       res.status(200).json({ detail: user });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
 };
 
 exports.createPost = (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    const error = new Error("Validation failed entered data is incorrect");
+    error.statusCode = 422;
+    error.data = errors.array();
+    throw error;
+  }
   const title = req.body.title;
   const description = req.body.description;
+  if (!req.file) {
+    const error = new Error("Image not provided");
+    error.statusCode = 422;
+    throw error;
+  }
   const imageUrl = req.file.path.replace("\\", "/");
   console.log(title, description);
   console.log(req.file);
@@ -28,29 +52,47 @@ exports.createPost = (req, res, next) => {
       return User.findById(req.userId);
     })
     .then((user) => {
-      creator = user;
       user.posts.push(post);
       return user.save();
     })
     .then((result) => {
       console.log(res);
-      console.log("post created successfully");
-      return res.status(200).json({ post: post });
+      res.status(201).json({ message: "Post Created ", post: post });
     })
     .catch((err) => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
 
 exports.getPosts = (req, res, next) => {
+  let currentPage = req.query.page || 1;
+  const PAGE_SIZE = 2;
+  let totalPages;
   Post.find()
+    .countDocuments()
+    .then((count) => {
+      totalPages = Math.ceil(count / PAGE_SIZE);
+      return Post.find()
+        .skip((currentPage - 1) * PAGE_SIZE)
+        .limit(PAGE_SIZE);
+    })
     .then((posts) => {
       res
         .status(200)
-        .json({ message: "Posts fetched sucessfully", data: posts });
+        .json({
+          message: "Posts fetched sucessfully",
+          pages: totalPages,
+          data: posts,
+        });
     })
     .catch((err) => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
 
@@ -68,15 +110,34 @@ exports.getPost = (req, res, next) => {
 
 exports.updatePost = (req, res, next) => {
   const postId = req.params.postId;
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors.array());
+    const error = new Error("Validation failed entered data is incorrect");
+    error.statusCode = 422;
+    error.data = errors.array();
+    throw error;
+  }
   const updatedTitle = req.body.title;
   const updatedDescription = req.body.description;
-  console.log(postId);
+  let imageUrl = req.body.image;
+  console.log(imageUrl);
+  if (req.file) {
+    imageUrl = req.file.path.replace("\\", "/");
+  }
+
+  if (!imageUrl) {
+    const error = new Error("No file picked");
+    error.statusCode = 422;
+    throw error;
+  }
   Post.findById(postId)
     .then((post) => {
       if (post.creator.toString() !== postId) {
         console.log("Not Authorized");
       }
       post.title = updatedTitle;
+      post.imageUrl = imageUrl;
       post.description = updatedDescription;
       return post.save();
     })
@@ -93,7 +154,9 @@ exports.deletePost = (req, res, next) => {
   Post.findById(postId)
     .then((post) => {
       if (!post) {
-        console.log("no post found");
+        const error = new Error("No Post found");
+        error.statusCode = 404;
+        throw error;
       }
       return Post.findByIdAndRemove(postId);
     })
@@ -105,10 +168,13 @@ exports.deletePost = (req, res, next) => {
       return user.save();
     })
     .then(() => {
-      console.log("deleted Successfully");
+      console.log("Post deleted successfully");
       res.status(200).json({ message: "deleted" });
     })
     .catch((err) => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };

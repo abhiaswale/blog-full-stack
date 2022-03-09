@@ -28,39 +28,55 @@ function Register() {
         console.log(data);
       })
       .catch((err) => {
-        console.log(err);
+        alert(err);
       });
   };
   return (
-    <div className="App">
-      <h1>Register</h1>
+    <div className="flex justify-center items-center flex-col absolute top-52 left-1/3 bg-white p-10 rounded-2xl">
+      <h1 className="text-2xl font-semibold p-4">Register</h1>
       <form onSubmit={submitHandler}>
-        <input
-          value={name}
-          type="text"
-          placeholder="Name"
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-        ></input>
-        <input
-          value={email}
-          type="email"
-          placeholder="Email"
-          onChange={(e) => {
-            setEmail(e.target.value);
-          }}
-        ></input>
-        <input
-          value={password}
-          type="password"
-          placeholder="Password"
-          onChange={(e) => {
-            setPassword(e.target.value);
-          }}
-        />
-        <button type="submit">Submit</button>
+        <div>
+          <input
+            value={name}
+            type="text"
+            placeholder="Name"
+            onChange={(e) => {
+              setName(e.target.value);
+            }}
+            className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+          ></input>
+        </div>
+        <div>
+          <input
+            value={email}
+            type="email"
+            placeholder="Email"
+            onChange={(e) => {
+              setEmail(e.target.value);
+            }}
+            className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+          ></input>
+        </div>
+        <div>
+          <input
+            value={password}
+            type="password"
+            placeholder="Password"
+            onChange={(e) => {
+              setPassword(e.target.value);
+            }}
+            className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+          />
+        </div>
       </form>
+      <div className="flex justify-center items-center my-2 w-full">
+        <button
+          className="font-semibold p-3 bg-blue-600 rounded-lg"
+          type="submit"
+        >
+          Register
+        </button>
+      </div>
     </div>
   );
 }

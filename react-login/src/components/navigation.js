@@ -7,15 +7,25 @@ const Nav = () => {
   const user = localStorage.getItem("userId");
   const navigate = useNavigate();
   const logoutHandler = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("userId");
+    // localStorage.removeItem("token");
+    // localStorage.removeItem("userId");
+    authCtx.logout();
     navigate("/");
   };
   return (
-    <div>
+    <div className="flex justify-between items-center h-20 bg-gray-600">
+      <h3 className="text-3xl p-12 font-bold">Blogger.</h3>
       <nav>
-        {!authCtx.isAuth && <a href="/">Login</a>}
-        {!authCtx.isAuth && <a href="/register">Register</a>}
+        {!authCtx.isAuth && (
+          <a className="p-10" href="/">
+            Login
+          </a>
+        )}
+        {!authCtx.isAuth && (
+          <a className="p-10" href="/register">
+            Register
+          </a>
+        )}
         {user && <button onClick={logoutHandler}>Logout</button>}
       </nav>
     </div>

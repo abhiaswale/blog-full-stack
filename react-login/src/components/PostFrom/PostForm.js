@@ -27,6 +27,7 @@ const PostForm = () => {
       .then((post) => {
         setTitle(post.post.title);
         setDescription(post.post.description);
+        console.log(post.post);
       })
       .catch((err) => {
         console.log(err);
@@ -113,6 +114,7 @@ const PostForm = () => {
           id="image"
           className="mt-5"
           onChange={fileChangeHandler}
+          //   defaultValue={image}
         ></input>
         {image && <img src={preview}></img>}
         <textarea

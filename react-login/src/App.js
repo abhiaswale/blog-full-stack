@@ -8,7 +8,7 @@ import SinglePost from "./components/SinglePost/SinglePost";
 import PostForm from "./components/PostFrom/PostForm";
 function App() {
   return (
-    <div>
+    <div className="font-Mon w-full h-screen bg-sky-200">
       <Nav />
       <Routes>
         <Route path="/" exact element={<Login />} />

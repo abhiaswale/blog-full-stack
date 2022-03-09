@@ -11,8 +11,16 @@ const Login = () => {
   const loginHandler = async (e) => {
     console.log(authCtx.isAuth);
     e.preventDefault();
-    if (!email && !password) {
-      alert("email & password cannot be empty");
+    if (!email) {
+      alert("Email cannot be empty");
+      return;
+    }
+    if (!password) {
+      alert("password cannot be empty");
+      return;
+    }
+    if (password.length < 5) {
+      alert("password must be 5 charaters long");
       return;
     }
     fetch("http://localhost:8080/auth/login", {
@@ -24,8 +32,8 @@ const Login = () => {
       }),
     })
       .then((res) => {
-        if (res.statusCode === 422) {
-          throw new Error("Validation Failed");
+        if (res.status === 401) {
+          throw new Error("Please Enter Valid Email");
         }
         if (res.status !== 200 && res.status !== 201) {
           throw new Error("Could not authenticate you");
@@ -37,10 +45,13 @@ const Login = () => {
         authCtx.login(data.token);
         authCtx.userIdHandler(data.userId);
         setIsAuth(true);
+      })
+      .then(() => {
         navigate("/startpage");
       })
       .catch((err) => {
         console.log(err);
+        setIsAuth(false);
         alert(err);
       });
   };
@@ -55,8 +66,9 @@ const Login = () => {
     // routes = <StartingPage userId={userId} token={token} />;
   } else {
     routes = (
-      <div className="flex justify-center w-full h-screen items-center bg-sky-200 flex-col">
-        <h1>Login</h1>
+      <div className="flex justify-center items-center flex-col absolute top-52 left-1/3 bg-white p-10 rounded-2xl">
+        <h1 className="text-2xl font-semibold p-4">Welcome Back</h1>
+        <p className="p-2">Enter your credentials to access your account</p>
         <form onSubmit={loginHandler}>
           <div>
             <input
@@ -66,6 +78,7 @@ const Login = () => {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
+              className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
             ></input>
           </div>
           <div>
@@ -76,11 +89,19 @@ const Login = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
+              className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
             ></input>
           </div>
-          <button type="submit">Submit</button>
+          <div className="flex justify-center items-center my-2 w-full">
+            <button
+              className="font-semibold p-3 bg-blue-600 rounded-lg"
+              type="submit"
+            >
+              Submit
+            </button>
+          </div>
         </form>
-        <button onClick={newUserHandler}>New user</button>
+        {/* <button onClick={newUserHandler}>New user</button> */}
       </div>
     );
   }
