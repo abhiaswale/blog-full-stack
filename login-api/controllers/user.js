@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const Post = require("../models/post");
 const { validationResult } = require("express-validator");
+const user = require("../models/user");
 exports.getUserDetail = (req, res, next) => {
   User.findById(req.userId)
     .then((user) => {
@@ -57,7 +58,10 @@ exports.createPost = (req, res, next) => {
     })
     .then((result) => {
       console.log(res);
-      res.status(201).json({ message: "Post Created ", post: post });
+      res.status(201).json({
+        message: "Post Created ",
+        post: post,
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -69,7 +73,7 @@ exports.createPost = (req, res, next) => {
 
 exports.getPosts = (req, res, next) => {
   let currentPage = req.query.page || 1;
-  const PAGE_SIZE = 2;
+  const PAGE_SIZE = 5;
   let totalPages;
   Post.find()
     .countDocuments()
@@ -78,15 +82,14 @@ exports.getPosts = (req, res, next) => {
       return Post.find()
         .skip((currentPage - 1) * PAGE_SIZE)
         .limit(PAGE_SIZE);
+      // .sort({ createdAt: -1 });
     })
-    .then((posts) => {
-      res
-        .status(200)
-        .json({
-          message: "Posts fetched sucessfully",
-          pages: totalPages,
-          data: posts,
-        });
+    .then((postss) => {
+      res.status(200).json({
+        message: "Posts fetched sucessfully",
+        pages: totalPages,
+        data: posts,
+      });
     })
     .catch((err) => {
       if (!err.statusCode) {
@@ -101,10 +104,18 @@ exports.getPost = (req, res, next) => {
   console.log(postId);
   Post.findById(postId)
     .then((post) => {
+      if (!post) {
+        const error = new Error("Post does not exist!");
+        error.statusCode = 402;
+        throw err;
+      }
       res.status(200).json({ message: "Post fetched succesfully", post: post });
     })
     .catch((err) => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
 
@@ -133,8 +144,15 @@ exports.updatePost = (req, res, next) => {
   }
   Post.findById(postId)
     .then((post) => {
-      if (post.creator.toString() !== postId) {
-        console.log("Not Authorized");
+      if (!post) {
+        const error = new Error("Post does not exist!");
+        error.statusCode = 402;
+        throw err;
+      }
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not Authorized");
+        error.statusCode = 401;
+        throw error;
       }
       post.title = updatedTitle;
       post.imageUrl = imageUrl;
@@ -142,10 +160,15 @@ exports.updatePost = (req, res, next) => {
       return post.save();
     })
     .then((result) => {
-      res.status(200).json({ message: "updated successfully", data: result });
+      res
+        .status(200)
+        .json({ message: "Post updated successfully", data: result });
     })
     .catch((err) => {
-      console.log(err);
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
     });
 };
 
@@ -156,6 +179,11 @@ exports.deletePost = (req, res, next) => {
       if (!post) {
         const error = new Error("No Post found");
         error.statusCode = 404;
+        throw error;
+      }
+      if (post.creator.toString() !== req.userId) {
+        const error = new Error("Not Authorized");
+        error.statusCode = 401;
         throw error;
       }
       return Post.findByIdAndRemove(postId);

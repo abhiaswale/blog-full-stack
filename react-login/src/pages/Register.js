@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
   const submitHandler = async (e) => {
     e.preventDefault();
     fetch("http://localhost:8080/auth/register", {
@@ -26,6 +28,7 @@ function Register() {
       })
       .then((data) => {
         console.log(data);
+        navigate("/");
       })
       .catch((err) => {
         alert(err);
@@ -68,15 +71,15 @@ function Register() {
             className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
           />
         </div>
+        <div className="flex justify-center items-center my-2 w-full">
+          <button
+            className="font-semibold p-3 bg-blue-600 rounded-lg"
+            type="submit"
+          >
+            Register
+          </button>
+        </div>
       </form>
-      <div className="flex justify-center items-center my-2 w-full">
-        <button
-          className="font-semibold p-3 bg-blue-600 rounded-lg"
-          type="submit"
-        >
-          Register
-        </button>
-      </div>
     </div>
   );
 }

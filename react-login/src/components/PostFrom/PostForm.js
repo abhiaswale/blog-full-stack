@@ -91,12 +91,16 @@ const PostForm = () => {
       });
   };
   return (
-    <div>
-      <h3>Post a blog</h3>
+    <div className="mt-10 flex justify-center">
       <form
-        className="flex justify-center items-center flex-col"
+        className="flex items-start justify-center flex-col w-1/2 bg-gray-500 p-6"
         onSubmit={submitHandler}
       >
+        <h3 className="font-bold text-xl">Post a blog</h3>
+        <label for="name" className="font-medium w-full mt-4">
+          TITLE:
+        </label>
+        <hr />
         <input
           type="text"
           id="name"
@@ -105,30 +109,37 @@ const PostForm = () => {
             setTitle(e.target.value);
           }}
           defaultValue={title}
-          className="mt-5"
+          className="font-medium w-full p-1"
         ></input>
-        <label>Choose a image</label>
+        <label className="font-medium w-full mt-4">IMAGE</label>
         <input
           type="file"
           name="image"
           id="image"
-          className="mt-5"
+          className=""
           onChange={fileChangeHandler}
           //   defaultValue={image}
         ></input>
-        {image && <img src={preview}></img>}
+        <div className="w-32 h-32">
+          {image && <img className="w-32 h-32" src={preview}></img>}
+        </div>
+        <label className="font-medium w-full mt-4">CONTENT</label>
         <textarea
           name="description"
           id="description"
-          row="6"
-          cols="20"
+          row="10"
+          cols="30"
           onChange={(e) => {
             setDescription(e.target.value);
           }}
           defaultValue={description}
-          className="mt-5"
+          className="w-full p-1"
         ></textarea>
-        <button type="submit">Post</button>
+        <div className="mt-4">
+          <button className="font-bold " type="submit">
+            Post
+          </button>
+        </div>
       </form>
     </div>
   );

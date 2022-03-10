@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Modal from "../components/Modal/Modal";
 import AuthContext from "../store/auth-context";
 
 const Login = () => {
@@ -8,8 +9,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuth, setIsAuth] = useState(false);
+
+  const [openModal, setOpenModal] = useState(false);
+
   const loginHandler = async (e) => {
-    console.log(authCtx.isAuth);
     e.preventDefault();
     if (!email) {
       alert("Email cannot be empty");
@@ -56,9 +59,9 @@ const Login = () => {
       });
   };
 
-  const newUserHandler = () => {
-    navigate("/register");
-  };
+  // const newUserHandler = () => {
+  //   navigate("/register");
+  // };
 
   let routes;
 
@@ -78,7 +81,7 @@ const Login = () => {
               onChange={(e) => {
                 setEmail(e.target.value);
               }}
-              className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+              className="w-96 my-2 text-white bg-black text-lg p-2 rounded-xl"
             ></input>
           </div>
           <div>
@@ -89,7 +92,7 @@ const Login = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
               }}
-              className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+              className="w-96 my-2 text-white bg-black text-lg p-2 rounded-xl"
             ></input>
           </div>
           <div className="flex justify-center items-center my-2 w-full">
@@ -105,7 +108,19 @@ const Login = () => {
       </div>
     );
   }
-  return <div>{routes}</div>;
+  return (
+    <div>
+      {/* {openModal && <Modal onCancel={setOpenModal} />}
+      <button
+        onClick={() => {
+          setOpenModal(!openModal);
+        }}
+      >
+        open
+      </button> */}
+      {routes}
+    </div>
+  );
 };
 
 export default Login;
