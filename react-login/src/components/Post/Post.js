@@ -13,12 +13,13 @@ const Post = (props) => {
     <div className="border-2 border-sky-500  w-full my-3">
       <li key={props._id} className="list-none p-2">
         <p className="text-xs my-2">
-          Created by ABCSFJFS
-          {/* {props.creator === authCtx.userId ? (
+          Created by{" "}
+          {props.creator === authCtx.userId ? (
             <span>you</span>
           ) : (
-            <span>{props.createdAt.split("T")[0]}</span>
-          )} */}
+            <span>{props.creator.name}</span>
+          )}{" "}
+          at {props.createdAt.split("T")[0]}
         </p>
         <h5 className="font-bold text-xl my-2">{props.title}</h5>
         <div className="flex justify-end items-center">

@@ -3,16 +3,26 @@ import ReactDOM from "react-dom";
 const Modal = (props) => {
   return ReactDOM.createPortal(
     <div className="w-full h-screen bg-black bg-opacity-60 z-20 fixed">
-      <div className="absolute top-1/2 left-1/2 bg-white text-black p-4 rounded-lg">
-        <section className="flex justify-between items-center font-bold text-xl">
-          <h3>Some error occoured</h3>
-          <button onClick={props.handleError}>X</button>
+      <div className="absolute top-1/4 left-1/4 translate-x-52 translate-y-24 bg-white text-black p-4 rounded-lg w-72">
+        <section className="flex justify-between items-center font-bold text-xl w-full">
+          <h3 className="">Some error occoured</h3>
+          {/* <button onClick={props.handleError}>X</button> */}
           <hr />
         </section>
-        <p>{props.children}</p>
+        <p className="my-8">{props.children}</p>
         <span>
-          <button>ok</button>
-          <button onClick={props.handleError}>cancel</button>
+          <button
+            className="text-lg px-2 mr-2 hover:bg-cyan-400 border-2 border-black"
+            onClick={props.handleError}
+          >
+            Ok
+          </button>
+          <button
+            className="text-lg px-2 mx-2 hover:bg-cyan-400 border-2 border-black"
+            onClick={props.handleError}
+          >
+            Cancel
+          </button>
         </span>
       </div>
     </div>,

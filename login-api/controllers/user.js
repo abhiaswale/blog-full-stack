@@ -80,11 +80,12 @@ exports.getPosts = (req, res, next) => {
     .then((count) => {
       totalPages = Math.ceil(count / PAGE_SIZE);
       return Post.find()
+        .populate("creator")
         .skip((currentPage - 1) * PAGE_SIZE)
         .limit(PAGE_SIZE);
       // .sort({ createdAt: -1 });
     })
-    .then((postss) => {
+    .then((posts) => {
       res.status(200).json({
         message: "Posts fetched sucessfully",
         pages: totalPages,

@@ -10,8 +10,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isAuth, setIsAuth] = useState(false);
 
-  const [openModal, setOpenModal] = useState(false);
-
   const loginHandler = async (e) => {
     e.preventDefault();
     if (!email) {
@@ -108,19 +106,7 @@ const Login = () => {
       </div>
     );
   }
-  return (
-    <div>
-      {/* {openModal && <Modal onCancel={setOpenModal} />}
-      <button
-        onClick={() => {
-          setOpenModal(!openModal);
-        }}
-      >
-        open
-      </button> */}
-      {routes}
-    </div>
-  );
+  return <div>{routes}</div>;
 };
 
 export default Login;
