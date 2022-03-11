@@ -3,25 +3,19 @@ import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
 import Post from "../components/Post/Post";
 import AuthContext from "../store/auth-context";
+import MessageContext from "../store/message-context";
 
 const StartingPage = (props) => {
   const navigate = useNavigate();
   const authCtx = useContext(AuthContext);
+  const msgCtx = useContext(MessageContext);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
-  const [error, setError] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
   const [numberOfPages, setNumberOfPages] = useState(1);
 
   const pages = new Array(numberOfPages).fill(null);
-
-  const catchError = (errror) => {
-    setError(errror);
-  };
-  const errorHandler = () => {
-    setError(null);
-  };
 
   useEffect(() => {
     fetch("http://localhost:8080/user/detail", {
@@ -60,13 +54,14 @@ const StartingPage = (props) => {
       })
       .catch((err) => {
         console.log(err);
-        catchError(err);
+        msgCtx.catchMessage(err);
       });
   };
   useEffect(() => {
     postListFetch();
   }, [pageNumber]);
 
+  //PAGINATION LOGIC
   const pageHandler = (i) => {
     setPageNumber(i + 1);
   };
@@ -99,7 +94,7 @@ const StartingPage = (props) => {
   } else {
     content = (
       <div>
-        <ErrorHandler error={error} onClose={errorHandler} />
+        <ErrorHandler error={msgCtx.message} onClose={msgCtx.clearMessage} />
         <h1 className="text-6xl font-bold my-8">Hi {userData.detail.name}</h1>
         <div className="mt-20 mx-20">
           <form className="flex justify-center items-center text-xl">
@@ -129,7 +124,7 @@ const StartingPage = (props) => {
                 _id={post._id}
                 title={post.title}
                 description={post.description}
-                creator={post.creator}
+                creator={post.creator._id}
                 createdAt={post.createdAt}
                 name={post.name}
                 onDelete={deleteHandler}

@@ -1,8 +1,11 @@
 import React, { useState, useContext, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import AuthContext from "../../store/auth-context";
+import MessageContext from "../../store/message-context";
+import ErrorHandler from "../ErrorHandler/ErrorHandler";
 const PostForm = () => {
   const authCtx = useContext(AuthContext);
+  const msgCtx = useContext(MessageContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
@@ -22,6 +25,9 @@ const PostForm = () => {
       },
     })
       .then((res) => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Cannot get post data ");
+        }
         return res.json();
       })
       .then((post) => {
@@ -31,6 +37,7 @@ const PostForm = () => {
       })
       .catch((err) => {
         console.log(err);
+        msgCtx.catchMessage(err);
       });
   };
 
@@ -80,6 +87,9 @@ const PostForm = () => {
       },
     })
       .then((resp) => {
+        if (resp.status !== 200 && resp.status !== 201) {
+          throw new Error("Something went wrong, please try again");
+        }
         return resp.json();
       })
       .then((data) => {
@@ -88,10 +98,12 @@ const PostForm = () => {
       })
       .catch((err) => {
         console.log(err);
+        msgCtx.catchMessage(err);
       });
   };
   return (
     <div className="mt-10 flex justify-center">
+      <ErrorHandler error={msgCtx.message} onClose={msgCtx.clearMessage} />
       <form
         className="flex items-start justify-center flex-col w-1/2 bg-gray-500 p-6"
         onSubmit={submitHandler}
