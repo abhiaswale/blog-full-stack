@@ -17,7 +17,7 @@ const Post = (props) => {
           {props.creator === authCtx.userId ? (
             <span>you</span>
           ) : (
-            <span>{props.creator.name}</span>
+            <span>{props.creatorName}</span>
           )}{" "}
           at {props.createdAt.split("T")[0]}
         </p>

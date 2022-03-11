@@ -2,6 +2,7 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
 import Post from "../components/Post/Post";
+import PostForm from "../components/PostFrom/PostForm";
 import AuthContext from "../store/auth-context";
 import MessageContext from "../store/message-context";
 
@@ -16,6 +17,20 @@ const StartingPage = (props) => {
   const [numberOfPages, setNumberOfPages] = useState(1);
 
   const pages = new Array(numberOfPages).fill(null);
+
+  const date = new Date();
+  const wishHour = date.getHours();
+  console.log(wishHour);
+  let wishMessage;
+  if (wishHour >= 5 && wishHour < 12) {
+    wishMessage = "Good Morning";
+  } else if (wishHour >= 12 && wishHour < 17) {
+    wishMessage = "Good Afternoon";
+  } else if (wishHour >= 17 && wishHour < 21) {
+    wishMessage = "Good Evening";
+  } else {
+    wishMessage = "Good Night";
+  }
 
   useEffect(() => {
     fetch("http://localhost:8080/user/detail", {
@@ -80,12 +95,20 @@ const StartingPage = (props) => {
         Authorization: "Bearer " + localStorage.getItem("token"),
       },
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error("Cannot delete product, Please try again");
+        }
+        return res.json();
+      })
       .then((result) => {
         setPosts((prevData) => {
           const updatedPosts = prevData.filter((p) => p._id !== id);
           return updatedPosts;
         });
+      })
+      .catch((err) => {
+        msgCtx.catchMessage(err);
       });
   };
   let content;
@@ -96,14 +119,17 @@ const StartingPage = (props) => {
       <div>
         <ErrorHandler error={msgCtx.message} onClose={msgCtx.clearMessage} />
         <h1 className="text-6xl font-bold my-8">Hi {userData.detail.name}</h1>
+        <p>{wishMessage}</p>
         <div className="mt-20 mx-20">
           <form className="flex justify-center items-center text-xl">
             <input
-              className="p-2 w-1/3"
+              className="p-2 w-1/3 border-2 border-slate-700 "
               type="text"
               placeholder="Enter Status"
             ></input>
-            <button className="p-2 ">Update status</button>
+            <button className="ml-2 p-2 border-2 border-slate-700 font-semibold">
+              Update status
+            </button>
           </form>
         </div>
         <div className="flex justify-center items-center text-xl font-bold p-2 mt-4">
@@ -125,6 +151,7 @@ const StartingPage = (props) => {
                 title={post.title}
                 description={post.description}
                 creator={post.creator._id}
+                creatorName={post.creator.name}
                 createdAt={post.createdAt}
                 name={post.name}
                 onDelete={deleteHandler}

@@ -7,8 +7,6 @@ const Nav = () => {
   const user = localStorage.getItem("userId");
   const navigate = useNavigate();
   const logoutHandler = () => {
-    // localStorage.removeItem("token");
-    // localStorage.removeItem("userId");
     authCtx.logout();
     navigate("/");
   };
@@ -17,16 +15,25 @@ const Nav = () => {
       <h3 className="text-3xl p-12 font-bold">Blogger.</h3>
       <nav>
         {!authCtx.isAuth && (
-          <a className="p-10" href="/">
+          <a className="p-10 font-semibold" href="/">
             Login
           </a>
         )}
         {!authCtx.isAuth && (
-          <a className="p-10" href="/register">
+          <a className="p-10 font-semibold" href="/register">
             Register
           </a>
         )}
-        {user && <button onClick={logoutHandler}>Logout</button>}
+        {authCtx.isAuth && (
+          <a className="p-10 font-semibold" href="/startpage">
+            Feed
+          </a>
+        )}
+        {user && (
+          <button className="p-10 font-semibold" onClick={logoutHandler}>
+            Logout
+          </button>
+        )}
       </nav>
     </div>
   );
