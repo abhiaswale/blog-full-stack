@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
 import Post from "../components/Post/Post";
 import AuthContext from "../store/auth-context";
+import CircularProgress from "@mui/material/CircularProgress";
+import Box from "@mui/material/Box";
 import MessageContext from "../store/message-context";
 
 const StartingPage = (props) => {
@@ -156,7 +158,11 @@ const StartingPage = (props) => {
   };
   let content;
   if (loading) {
-    content = <h1>Loading...</h1>;
+    content = (
+      <Box sx={{ display: "flex" }}>
+        <CircularProgress />
+      </Box>
+    );
   } else {
     content = (
       <div>
