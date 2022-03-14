@@ -109,9 +109,7 @@ const PostForm = () => {
         onSubmit={submitHandler}
       >
         <h3 className="font-bold text-xl">Post a blog</h3>
-        <label for="name" className="font-medium w-full mt-4">
-          TITLE:
-        </label>
+        <label className="font-medium w-full mt-4">TITLE:</label>
         <hr />
         <input
           type="text"

@@ -1,3 +1,4 @@
+import { data } from "autoprefixer";
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
@@ -11,6 +12,7 @@ const StartingPage = (props) => {
   const authCtx = useContext(AuthContext);
   const msgCtx = useContext(MessageContext);
   const [userData, setUserData] = useState(null);
+  const [status, setStatus] = useState();
   const [loading, setLoading] = useState(true);
   const [posts, setPosts] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
@@ -33,6 +35,15 @@ const StartingPage = (props) => {
   }
 
   useEffect(() => {
+    if (!authCtx.token || !authCtx.userId) {
+      alert("You have been logged out");
+      navigate("/");
+      setLoading(true);
+      return;
+    }
+    if (localStorage.getItem("expiryDate") <= new Date()) {
+      authCtx.logout();
+    }
     fetch("http://localhost:8080/user/detail", {
       headers: {
         Authorization: "Bearer " + authCtx.token,
@@ -43,6 +54,7 @@ const StartingPage = (props) => {
       })
       .then((data) => {
         setUserData(data);
+        setStatus(data.detail.status);
         console.log(data);
         setLoading(false);
       });
@@ -111,6 +123,24 @@ const StartingPage = (props) => {
         msgCtx.catchMessage(err);
       });
   };
+
+  const updateStatusHandler = async (e) => {
+    e.preventDefault();
+    const res = await fetch("http://localhost:8080/user/status", {
+      method: "PUT",
+      headers: {
+        Authorization: "Bearer " + authCtx.token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        status: status,
+      }),
+    });
+
+    const data = await res.json();
+    console.log(data);
+    console.log(status);
+  };
   let content;
   if (loading) {
     content = <h1>Loading...</h1>;
@@ -126,8 +156,15 @@ const StartingPage = (props) => {
               className="p-2 w-1/3 border-2 border-slate-700 "
               type="text"
               placeholder="Enter Status"
+              defaultValue={userData.detail.status}
+              onChange={(e) => {
+                setStatus(e.target.value);
+              }}
             ></input>
-            <button className="ml-2 p-2 border-2 border-slate-700 font-semibold">
+            <button
+              onClick={updateStatusHandler}
+              className="ml-2 p-2 border-2 border-slate-700 font-semibold"
+            >
               Update status
             </button>
           </form>

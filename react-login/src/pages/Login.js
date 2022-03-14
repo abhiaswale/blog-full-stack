@@ -1,6 +1,5 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Modal from "../components/Modal/Modal";
 import AuthContext from "../store/auth-context";
 
 const Login = () => {
@@ -45,6 +44,10 @@ const Login = () => {
         console.log(data);
         authCtx.login(data.token);
         authCtx.userIdHandler(data.userId);
+        const remainingMiliseconds = 60 * 60 * 1000;
+        const expiryDate = new Date().getTime() + remainingMiliseconds;
+        localStorage.setItem("expiryDate", expiryDate);
+        autoLogoutHandler(remainingMiliseconds);
         setIsAuth(true);
       })
       .then(() => {
@@ -55,6 +58,13 @@ const Login = () => {
         setIsAuth(false);
         alert(err);
       });
+  };
+
+  const autoLogoutHandler = (miliseconds) => {
+    setTimeout(() => {
+      console.log("Logout executed");
+      authCtx.logout();
+    }, miliseconds);
   };
 
   // const newUserHandler = () => {

@@ -73,7 +73,7 @@ exports.createPost = (req, res, next) => {
 
 exports.getPosts = (req, res, next) => {
   let currentPage = req.query.page || 1;
-  const PAGE_SIZE = 5;
+  const PAGE_SIZE = 2;
   let totalPages;
   Post.find()
     .countDocuments()
@@ -82,8 +82,8 @@ exports.getPosts = (req, res, next) => {
       return Post.find()
         .populate("creator")
         .skip((currentPage - 1) * PAGE_SIZE)
-        .limit(PAGE_SIZE);
-      // .sort({ createdAt: -1 });
+        .limit(PAGE_SIZE)
+        .sort({ createdAt: -1 });
     })
     .then((posts) => {
       res.status(200).json({
@@ -199,6 +199,29 @@ exports.deletePost = (req, res, next) => {
     .then(() => {
       console.log("Post deleted successfully");
       res.status(200).json({ message: "deleted" });
+    })
+    .catch((err) => {
+      if (!err.statusCode) {
+        err.statusCode = 500;
+      }
+      next(err);
+    });
+};
+
+exports.updateStatus = (req, res, next) => {
+  const newStatus = req.body.status;
+  User.findById(req.userId)
+    .then((user) => {
+      if (!user) {
+        const error = new Error("No user found!");
+        error.statusCode = 404;
+        throw error;
+      }
+      user.status = newStatus;
+      return user.save();
+    })
+    .then((result) => {
+      res.status(200).json({ message: "Status updated successfully" });
     })
     .catch((err) => {
       if (!err.statusCode) {

@@ -28,6 +28,7 @@ export const AuthContextProvider = (props) => {
     setToken(null);
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
+    localStorage.removeItem("expiryDate");
   };
 
   const contextValue = {

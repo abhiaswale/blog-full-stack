@@ -27,4 +27,6 @@ router.put(
 ); //UPDATE POST
 router.delete("/post/:postId", isAuth, userController.deletePost); //DELETE POST
 
+router.put("/status", isAuth, userController.updateStatus);
+
 module.exports = router;
