@@ -1,9 +1,7 @@
-import { data } from "autoprefixer";
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
 import Post from "../components/Post/Post";
-import PostForm from "../components/PostFrom/PostForm";
 import AuthContext from "../store/auth-context";
 import MessageContext from "../store/message-context";
 
@@ -17,12 +15,12 @@ const StartingPage = (props) => {
   const [posts, setPosts] = useState([]);
   const [pageNumber, setPageNumber] = useState(1);
   const [numberOfPages, setNumberOfPages] = useState(1);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const pages = new Array(numberOfPages).fill(null);
 
   const date = new Date();
   const wishHour = date.getHours();
-  console.log(wishHour);
   let wishMessage;
   if (wishHour >= 5 && wishHour < 12) {
     wishMessage = "Good Morning";
@@ -33,6 +31,17 @@ const StartingPage = (props) => {
   } else {
     wishMessage = "Good Night";
   }
+
+  let filterBlog;
+  const searchUpdate = () => {
+    filterBlog = posts.filter((p) => {
+      return p.title.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+    setPosts(filterBlog);
+  };
+
+  // useEffect(() => {
+  // }, [filterBlog]);
 
   useEffect(() => {
     if (!authCtx.token || !authCtx.userId) {
@@ -57,6 +66,10 @@ const StartingPage = (props) => {
         setStatus(data.detail.status);
         console.log(data);
         setLoading(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        msgCtx.catchMessage(err);
       });
   }, [authCtx.token]);
 
@@ -148,9 +161,11 @@ const StartingPage = (props) => {
     content = (
       <div>
         <ErrorHandler error={msgCtx.message} onClose={msgCtx.clearMessage} />
-        <h1 className="text-6xl font-bold my-8">Hi {userData.detail.name}</h1>
-        <p>{wishMessage}</p>
-        <div className="mt-20 mx-20">
+        <h1 className="text-6xl font-bold my-8">
+          Hi <span className="text-green-700">{userData.detail.name}</span>
+        </h1>
+
+        <div className="mt-18 mx-20">
           <form className="flex justify-center items-center text-xl">
             <input
               className="p-2 w-1/3 border-2 border-slate-700 "
@@ -171,13 +186,21 @@ const StartingPage = (props) => {
         </div>
         <div className="flex justify-center items-center text-xl font-bold p-2 mt-4">
           <button
-            className="bg-cyan-600 rounded-xl p-3 font-bold"
+            className="bg-cyan-600 rounded-xl p-3 font-bold mx-10"
             onClick={() => {
               navigate("/postform");
             }}
           >
             NEW POST
           </button>
+          <input
+            className="mx-10 p-2"
+            placeholder="Search a Blog"
+            onChange={(e) => {
+              setSearchTerm(e.target.value);
+              searchUpdate();
+            }}
+          ></input>
         </div>
         <div className=" flex items-center justify-center">
           <div className="w-1/2">
@@ -196,7 +219,7 @@ const StartingPage = (props) => {
             ))}
           </div>
         </div>
-        <section className="flex justify-center items-center font-normal text-lg">
+        <section className="flex justify-center items-center font-normal text-lg my-4">
           <button
             className="bg-white p-1 border-2 border-black mx-2"
             onClick={goToPrevious}
@@ -205,7 +228,7 @@ const StartingPage = (props) => {
           </button>
           {pages.map((val, index) => (
             <button
-              className="bg-white px-3 border-2 border-black mx-2"
+              className="bg-white px-3 py-1 border-2 border-black mx-2"
               key={index}
               onClick={() => {
                 pageHandler(index);

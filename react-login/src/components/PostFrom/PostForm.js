@@ -94,6 +94,8 @@ const PostForm = () => {
       })
       .then((data) => {
         console.log(data);
+        console.log(data.message);
+        msgCtx.catchMessage(data.message);
         navigate("/startpage");
       })
       .catch((err) => {

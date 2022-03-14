@@ -5,7 +5,7 @@ const Modal = (props) => {
     <div className="w-full h-screen bg-black bg-opacity-60 z-20 fixed">
       <div className="absolute top-1/4 left-1/4 translate-x-52 translate-y-24 bg-white text-black p-4 rounded-lg w-72">
         <section className="flex justify-between items-center font-bold text-xl w-full">
-          <h3 className="">Some error occoured</h3>
+          <h3 className="">Alert!!</h3>
           {/* <button onClick={props.handleError}>X</button> */}
           <hr />
         </section>
