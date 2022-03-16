@@ -197,8 +197,7 @@ exports.deletePost = (req, res, next) => {
       return user.save();
     })
     .then(() => {
-      console.log("Post deleted successfully");
-      res.status(200).json({ message: "deleted" });
+      res.status(200).json({ message: "Post Deleted!" });
     })
     .catch((err) => {
       if (!err.statusCode) {

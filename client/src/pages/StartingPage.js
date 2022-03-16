@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
 import Post from "../components/Post/Post";
@@ -6,6 +6,9 @@ import AuthContext from "../store/auth-context";
 import CircularProgress from "@mui/material/CircularProgress";
 import Box from "@mui/material/Box";
 import MessageContext from "../store/message-context";
+import { FcSearch } from "react-icons/fc";
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 
 const StartingPage = (props) => {
   const navigate = useNavigate();
@@ -18,6 +21,7 @@ const StartingPage = (props) => {
   const [pageNumber, setPageNumber] = useState(1);
   const [numberOfPages, setNumberOfPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
+  const search = useRef("");
 
   const pages = new Array(numberOfPages).fill(null);
 
@@ -25,13 +29,13 @@ const StartingPage = (props) => {
   const wishHour = date.getHours();
   let wishMessage;
   if (wishHour >= 5 && wishHour < 12) {
-    wishMessage = "Good Morning";
+    wishMessage = "Good Morning 🌄⛅";
   } else if (wishHour >= 12 && wishHour < 17) {
-    wishMessage = "Good Afternoon";
+    wishMessage = "Good Afternoon ☀";
   } else if (wishHour >= 17 && wishHour < 21) {
-    wishMessage = "Good Evening";
+    wishMessage = "Good Evening 🌅";
   } else {
-    wishMessage = "Good Night";
+    wishMessage = "Good Night 🌃";
   }
 
   let filterBlog;
@@ -41,9 +45,10 @@ const StartingPage = (props) => {
     });
     setPosts(filterBlog);
   };
-
-  // useEffect(() => {
-  // }, [filterBlog]);
+  const refSet = () => {
+    setSearchTerm(search.current.value);
+    searchUpdate();
+  };
 
   useEffect(() => {
     if (!authCtx.token || !authCtx.userId) {
@@ -129,6 +134,7 @@ const StartingPage = (props) => {
         return res.json();
       })
       .then((result) => {
+        msgCtx.catchMessage(result.message);
         setPosts((prevData) => {
           const updatedPosts = prevData.filter((p) => p._id !== id);
           return updatedPosts;
@@ -154,12 +160,13 @@ const StartingPage = (props) => {
 
     const data = await res.json();
     console.log(data);
+    msgCtx.catchMessage(data.message);
     console.log(status);
   };
   let content;
   if (loading) {
     content = (
-      <Box sx={{ display: "flex" }}>
+      <Box className="h-screen flex justify-center items-center">
         <CircularProgress />
       </Box>
     );
@@ -167,10 +174,12 @@ const StartingPage = (props) => {
     content = (
       <div>
         <ErrorHandler error={msgCtx.message} onClose={msgCtx.clearMessage} />
-        <h1 className="text-6xl font-bold my-8">
-          Hi <span className="text-green-700">{userData.detail.name}</span>
-        </h1>
-
+        <section className="flex justify-start items-center">
+          <h1 className=" text-6xl font-bold my-8">
+            Hi <span className="text-green-700">{userData.detail.name},</span>
+          </h1>
+          <span className="text-2xl mt-8 ml-6">{wishMessage}</span>
+        </section>
         <div className="mt-18 mx-20">
           <form className="flex justify-center items-center text-xl">
             <input
@@ -199,14 +208,17 @@ const StartingPage = (props) => {
           >
             NEW POST
           </button>
-          <input
-            className="mx-10 p-2"
-            placeholder="Search a Blog"
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              searchUpdate();
-            }}
-          ></input>
+          <div className="flex justify-center items-center relative">
+            <input
+              className=" shadow appearance-none ml-10 mr-6 p-2 focus:outline-none focus:shadow-outline"
+              placeholder="Search a Blog"
+              ref={search}
+            ></input>
+            <button className="text-3xl absolute right-10 " onClick={refSet}>
+              {" "}
+              <FcSearch />
+            </button>
+          </div>
         </div>
         <div className=" flex items-center justify-center">
           <div className="w-1/2">
@@ -230,7 +242,7 @@ const StartingPage = (props) => {
             className="bg-white p-1 border-2 border-black mx-2"
             onClick={goToPrevious}
           >
-            Previous
+            <NavigateBeforeIcon />
           </button>
           {pages.map((val, index) => (
             <button
@@ -247,7 +259,7 @@ const StartingPage = (props) => {
             className="bg-white p-1 border-2 border-black mx-2"
             onClick={goToNext}
           >
-            Next
+            <NavigateNextIcon />
           </button>
         </section>
       </div>

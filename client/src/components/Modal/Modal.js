@@ -9,7 +9,7 @@ const Modal = (props) => {
           {/* <button onClick={props.handleError}>X</button> */}
           <hr />
         </section>
-        <p className="my-8">{props.children}</p>
+        <section className="my-8">{props.children}</section>
         <span>
           <button
             className="text-lg px-2 mr-2 hover:bg-cyan-400 border-2 border-black"

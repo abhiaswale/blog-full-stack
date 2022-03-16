@@ -35,10 +35,11 @@ function Register() {
       });
   };
   return (
-    <div className="flex justify-center items-center flex-col absolute top-52 left-1/3 bg-white p-10 rounded-2xl">
+    <div className="w-1/3 flex justify-center items-center shadow-lg flex-col absolute top-52 left-1/3 bg-white p-10 rounded-2xl">
       <h1 className="text-2xl font-semibold p-4">Register</h1>
-      <form onSubmit={submitHandler}>
-        <div>
+      <div class="w-full border-t-[2px] border-gray-300"></div>
+      <form className="w-full" onSubmit={submitHandler}>
+        <div className="focus-within:text-green-600 focus:outline-none">
           <input
             value={name}
             type="text"
@@ -46,7 +47,7 @@ function Register() {
             onChange={(e) => {
               setName(e.target.value);
             }}
-            className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+            className="w-full my-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           ></input>
         </div>
         <div>
@@ -57,7 +58,7 @@ function Register() {
             onChange={(e) => {
               setEmail(e.target.value);
             }}
-            className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+            className="w-full my-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           ></input>
         </div>
         <div>
@@ -68,16 +69,22 @@ function Register() {
             onChange={(e) => {
               setPassword(e.target.value);
             }}
-            className="w-96 my-2 bg-black text-lg p-2 rounded-xl"
+            className="w-full my-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
           />
         </div>
-        <div className="flex justify-center items-center my-2 w-full">
+        <div className="flex justify-center items-center my-2 w-full flex-col">
           <button
             className="font-semibold p-3 bg-blue-600 rounded-lg"
             type="submit"
           >
             Register
           </button>
+          <p className="my-2">
+            Already have an account?{" "}
+            <a href="/" className="text-blue-600">
+              Login
+            </a>
+          </p>
         </div>
       </form>
     </div>

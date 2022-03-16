@@ -2,7 +2,6 @@ import React, { Fragment } from "react";
 import Modal from "../Modal/Modal";
 
 const ErrorHandler = (props) => {
-  //   console.log(props.error.message);
   return (
     <Fragment>
       {props.error && (
@@ -11,7 +10,11 @@ const ErrorHandler = (props) => {
           error={props.error}
           handleError={props.onClose}
         >
-          {props.error.message}
+          {props.error.message ? (
+            <p>{props.error.message}</p>
+          ) : (
+            <p>{props.error}</p>
+          )}
         </Modal>
       )}
     </Fragment>

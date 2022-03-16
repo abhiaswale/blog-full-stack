@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../store/auth-context";
+import { TestCredentials } from "../test";
 
 const Login = () => {
   const authCtx = useContext(AuthContext);
@@ -8,19 +9,21 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuth, setIsAuth] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
+  const [touched, setTouched] = useState(false);
 
   const loginHandler = async (e) => {
     e.preventDefault();
     if (!email) {
-      alert("Email cannot be empty");
+      setErrorMsg("Email cannot be empty");
       return;
     }
     if (!password) {
-      alert("password cannot be empty");
+      setErrorMsg("Password cannot be empty");
       return;
     }
     if (password.length < 5) {
-      alert("password must be 5 charaters long");
+      setErrorMsg("Password must be atleast 5 characters Long");
       return;
     }
     fetch("http://localhost:8080/auth/login", {
@@ -32,8 +35,9 @@ const Login = () => {
       }),
     })
       .then((res) => {
+        console.log(res.message);
         if (res.status === 401) {
-          throw new Error("Please Enter Valid Email");
+          throw new Error("No user with this email found");
         }
         if (res.status !== 200 && res.status !== 201) {
           throw new Error("Could not authenticate you");
@@ -56,7 +60,8 @@ const Login = () => {
       .catch((err) => {
         console.log(err);
         setIsAuth(false);
-        alert(err);
+        setErrorMsg(err.message);
+        setTouched(true);
       });
   };
 
@@ -71,25 +76,36 @@ const Login = () => {
   //   navigate("/register");
   // };
 
+  const setTestCredentials = () => {
+    setEmail(TestCredentials.email);
+    setPassword(TestCredentials.password);
+  };
+
   let routes;
 
   if (isAuth) {
     // routes = <StartingPage userId={userId} token={token} />;
+    navigate("/startpage");
   } else {
     routes = (
-      <div className="flex justify-center items-center flex-col absolute top-52 left-1/3 bg-white p-10 rounded-2xl">
-        <h1 className="text-2xl font-semibold p-4">Welcome Back</h1>
+      <div className=" w-1/3 flex justify-center items-center shadow-lg flex-col absolute top-52 left-1/3 bg-white p-8">
+        <h1 className="text-2xl font-semibold p-2">Welcome Back</h1>
         <p className="p-2">Enter your credentials to access your account</p>
-        <form onSubmit={loginHandler}>
-          <div>
+        <form className="w-full" onSubmit={loginHandler}>
+          <div className="focus-within:text-green-600 focus:outline-none">
             <input
               value={email}
               type="email"
               placeholder="Email"
               onChange={(e) => {
                 setEmail(e.target.value);
+                setErrorMsg(null);
               }}
-              className="w-96 my-2 text-white bg-black text-lg p-2 rounded-xl"
+              className={` w-full my-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errorMsg && errorMsg.toLowerCase().includes("email")
+                  ? "border-red-600"
+                  : ""
+              } `}
             ></input>
           </div>
           <div>
@@ -99,17 +115,33 @@ const Login = () => {
               placeholder="Password"
               onChange={(e) => {
                 setPassword(e.target.value);
+                setErrorMsg(null);
+                setTouched(false);
               }}
-              className="w-96 my-2 text-white bg-black text-lg p-2 rounded-xl"
+              className={` w-full my-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+                errorMsg && errorMsg.toLowerCase().includes("password")
+                  ? "border-red-500"
+                  : ""
+              } `}
             ></input>
           </div>
-          <div className="flex justify-center items-center my-2 w-full">
+          <p className=" text-red-400 font-semibold text-center">{errorMsg}</p>
+          <div className="flex justify-center items-center flex-col my-2 w-full">
             <button
-              className="font-semibold p-3 bg-blue-600 rounded-lg"
+              className="font-semibold p-3 bg-blue-600 rounded-lg hover:bg-purple-400"
               type="submit"
             >
-              Submit
+              Login
             </button>
+            <button className="mt-2" type="submit" onClick={setTestCredentials}>
+              Login with test credentials
+            </button>
+            <p className="my-2">
+              New user?{" "}
+              <a href="/register" className="text-blue-600">
+                Register
+              </a>
+            </p>
           </div>
         </form>
         {/* <button onClick={newUserHandler}>New user</button> */}

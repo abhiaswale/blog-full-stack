@@ -48,6 +48,7 @@ exports.login = (req, res, next) => {
         throw error;
       }
       loadedUser = user;
+      console.log(user.password, password);
       return bcrypt.compare(password, user.password);
     })
     .then((isEqual) => {
@@ -67,6 +68,7 @@ exports.login = (req, res, next) => {
       res.status(200).json({ token: token, userId: loadedUser._id.toString() });
     })
     .catch((err) => {
+      console.log(err);
       if (!err.statusCode) {
         err.statusCode = 500;
         throw err;

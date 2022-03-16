@@ -34,17 +34,16 @@ app.use("/images", express.static(path.join(__dirname, "images")));
 app.use(
   multer({ storage: fileStorage, fileFilter: fileFilter }).single("image")
 );
-
-app.use("/auth", authRoutes);
-app.use("/user", userRoutes);
-
 app.use((error, req, res, next) => {
-  console.log(error);
+  console.log(error.message);
   const status = error.statusCode || 500;
   const message = error.message;
   const data = error.data;
   res.status(status).json({ message: message, data: data });
 });
+
+app.use("/auth", authRoutes);
+app.use("/user", userRoutes);
 
 mongoose
   .connect(

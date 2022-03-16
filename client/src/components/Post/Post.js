@@ -24,7 +24,7 @@ const Post = (props) => {
         <h5 className="font-bold text-xl my-2">{props.title}</h5>
         <div className="flex justify-end items-center">
           <button
-            className="p-2 hover:bg-neutral-400 font-semibold transition ease-in-out delay-200"
+            className="p-2 hover:bg-neutral-400 font-semibold transition ease-in-out "
             onClick={() => {
               console.log(props._id.toString());
               navigate(`/post/${props._id}`);

@@ -11,26 +11,39 @@ const Nav = () => {
     navigate("/");
   };
   return (
-    <div className="flex justify-between items-center h-20 bg-gray-600">
-      <h3 className="text-3xl p-12 font-bold">Blogger.</h3>
-      <nav>
+    <div className="flex justify-between items-center h-16 bg-gray-600">
+      <h3 className="text-3xl mx-8 font-bold">Blogger.</h3>
+      <nav className=" mx-8 flex justify-around items-center w-1/6">
         {!authCtx.isAuth && (
-          <a className="p-10 font-semibold" href="/">
+          <a
+            className="p-2 font-medium border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75
+            "
+            href="/"
+          >
             Login
           </a>
         )}
         {!authCtx.isAuth && (
-          <a className="p-10 font-semibold" href="/register">
+          <a
+            className="p-2 font-medium border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
+            href="/register"
+          >
             Register
           </a>
         )}
         {authCtx.isAuth && (
-          <a className="p-10 font-semibold" href="/startpage">
+          <a
+            className="p-2 font-medium border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
+            href="/startpage"
+          >
             Feed
           </a>
         )}
         {user && (
-          <button className="p-10 font-semibold" onClick={logoutHandler}>
+          <button
+            className="p-2 font-medium border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
+            onClick={logoutHandler}
+          >
             Logout
           </button>
         )}
