@@ -1,5 +1,7 @@
 const User = require("../models/user");
 const Post = require("../models/post");
+const fs = require("fs");
+const path = require("path");
 const { validationResult } = require("express-validator");
 const user = require("../models/user");
 exports.getUserDetail = (req, res, next) => {
@@ -187,6 +189,7 @@ exports.deletePost = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
+      clearImage(post.imageUrl);
       return Post.findByIdAndRemove(postId);
     })
     .then((result) => {
@@ -228,4 +231,9 @@ exports.updateStatus = (req, res, next) => {
       }
       next(err);
     });
+};
+
+const clearImage = (filePath) => {
+  filePath = path.join(__dirname, "..", filePath);
+  fs.unlink(filePath, (err) => console.log(err));
 };

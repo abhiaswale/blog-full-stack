@@ -9,6 +9,7 @@ import MessageContext from "../store/message-context";
 import { FcSearch } from "react-icons/fc";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 const StartingPage = (props) => {
   const navigate = useNavigate();
@@ -22,32 +23,42 @@ const StartingPage = (props) => {
   const [numberOfPages, setNumberOfPages] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const search = useRef("");
-
+  const [searchTouched, setSearchTouched] = useState(false);
   const pages = new Array(numberOfPages).fill(null);
 
-  const date = new Date();
-  const wishHour = date.getHours();
-  let wishMessage;
-  if (wishHour >= 5 && wishHour < 12) {
-    wishMessage = "Good Morning 🌄⛅";
-  } else if (wishHour >= 12 && wishHour < 17) {
-    wishMessage = "Good Afternoon ☀";
-  } else if (wishHour >= 17 && wishHour < 21) {
-    wishMessage = "Good Evening 🌅";
-  } else {
-    wishMessage = "Good Night 🌃";
-  }
+  // const date = new Date();
+  // const wishHour = date.getHours();
+  // let wishMessage;
+  // if (wishHour >= 5 && wishHour < 12) {
+  //   wishMessage = "Good Morning 🌄";
+  // } else if (wishHour >= 12 && wishHour < 17) {
+  //   wishMessage = "Good Afternoon ☀";
+  // } else if (wishHour >= 17 && wishHour < 21) {
+  //   wishMessage = "Good Evening 🌅";
+  // } else {
+  //   wishMessage = "Good Night 🌃";
+  // }
 
   let filterBlog;
   const searchUpdate = () => {
     filterBlog = posts.filter((p) => {
       return p.title.toLowerCase().includes(searchTerm.toLowerCase());
     });
-    setPosts(filterBlog);
+    if (filterBlog) {
+      setPosts(filterBlog);
+    }
   };
   const refSet = () => {
-    setSearchTerm(search.current.value);
-    searchUpdate();
+    const temp = search.current.value.length;
+    console.log(temp);
+    console.log(search.current.value.length);
+    if (search.current.value.length !== 0) {
+      setSearchTerm(search.current.value);
+      setSearchTouched(true);
+      searchUpdate();
+    } else {
+      alert("Enter something to search");
+    }
   };
 
   useEffect(() => {
@@ -147,6 +158,11 @@ const StartingPage = (props) => {
 
   const updateStatusHandler = async (e) => {
     e.preventDefault();
+    console.log(userData.detail.status);
+    if (userData.detail.status === status) {
+      msgCtx.catchMessage("Please update current status and try again");
+      return;
+    }
     const res = await fetch("http://localhost:8080/user/status", {
       method: "PUT",
       headers: {
@@ -172,18 +188,17 @@ const StartingPage = (props) => {
     );
   } else {
     content = (
-      <div>
+      <div className="min-h-screen">
         <ErrorHandler error={msgCtx.message} onClose={msgCtx.clearMessage} />
-        <section className="flex justify-start items-center">
-          <h1 className=" text-6xl font-bold my-8">
-            Hi <span className="text-green-700">{userData.detail.name},</span>
+        <section className="flex justify-center items-center">
+          <h1 className=" lg:text-6xl text-4xl font-bold my-8">
+            Hi <span className="text-green-700">{userData.detail.name}</span>
           </h1>
-          <span className="text-2xl mt-8 ml-6">{wishMessage}</span>
         </section>
-        <div className="mt-18 mx-20">
-          <form className="flex justify-center items-center text-xl">
+        <div className="mt-18 lg:mx-20 mx-4">
+          <form className="w-auto flex lg:justify-center justify-around items-center lg:text-xl text-base">
             <input
-              className="p-2 w-1/3 border-2 border-slate-700 "
+              className="p-2 lg:w-1/3 w-4/5 border-2 border-slate-700 "
               type="text"
               placeholder="Enter Status"
               defaultValue={userData.detail.status}
@@ -193,15 +208,15 @@ const StartingPage = (props) => {
             ></input>
             <button
               onClick={updateStatusHandler}
-              className="ml-2 p-2 border-2 border-slate-700 font-semibold"
+              className=" ml-2 lg:p-2 p-[2px] border-2 border-slate-700 font-semibold "
             >
               Update status
             </button>
           </form>
         </div>
-        <div className="flex justify-center items-center text-xl font-bold p-2 mt-4">
+        <div className="flex lg:justify-center justify-between items-center  font-bold p-2 mt-4">
           <button
-            className="bg-cyan-600 rounded-xl p-3 font-bold mx-10"
+            className="bg-cyan-600 rounded-xl lg:p-3 p-[2px] font-bold lg:mx-10 mx-0 lg:text-xl text-sm lg:w-auto w-42"
             onClick={() => {
               navigate("/postform");
             }}
@@ -210,58 +225,80 @@ const StartingPage = (props) => {
           </button>
           <div className="flex justify-center items-center relative">
             <input
-              className=" shadow appearance-none ml-10 mr-6 p-2 focus:outline-none focus:shadow-outline"
+              className=" shadow appearance-none ml-10 mr-6 p-2 border-2 focus:outline-none focus:shadow-outline"
               placeholder="Search a Blog"
               ref={search}
+              onChange={() => {
+                setSearchTouched(true);
+              }}
             ></input>
-            <button className="text-3xl absolute right-10 " onClick={refSet}>
-              {" "}
+            {searchTouched && (
+              <button
+                className="
+                leading-4 absolute right-20"
+                onClick={() => {
+                  search.current.value = "";
+                  setSearchTouched(false);
+                  postListFetch();
+                }}
+              >
+                <CancelIcon />
+              </button>
+            )}
+            <button className="text-3xl absolute right-10" onClick={refSet}>
               <FcSearch />
             </button>
           </div>
         </div>
         <div className=" flex items-center justify-center">
-          <div className="w-1/2">
-            {posts.map((post) => (
-              <Post
-                key={post._id}
-                _id={post._id}
-                title={post.title}
-                description={post.description}
-                creator={post.creator._id}
-                creatorName={post.creator.name}
-                createdAt={post.createdAt}
-                name={post.name}
-                onDelete={deleteHandler}
-              />
-            ))}
-          </div>
+          {posts && posts.length > 0 && (
+            <div className="w-1/2">
+              {posts.map((post) => (
+                <Post
+                  key={post._id}
+                  _id={post._id}
+                  title={post.title}
+                  description={post.description}
+                  creator={post.creator._id}
+                  creatorName={post.creator.name}
+                  createdAt={post.createdAt}
+                  name={post.name}
+                  onDelete={deleteHandler}
+                />
+              ))}
+            </div>
+          )}
+          {posts.length === 0 && (
+            <p className="font-semibold text-xl my-10">No Posts Found.</p>
+          )}
         </div>
-        <section className="flex justify-center items-center font-normal text-lg my-4">
-          <button
-            className="bg-white p-1 border-2 border-black mx-2"
-            onClick={goToPrevious}
-          >
-            <NavigateBeforeIcon />
-          </button>
-          {pages.map((val, index) => (
+        {posts.length > 0 && (
+          <section className="flex justify-center items-center font-normal text-lg my-4">
             <button
-              className="bg-white px-3 py-1 border-2 border-black mx-2"
-              key={index}
-              onClick={() => {
-                pageHandler(index);
-              }}
+              className="bg-white p-1 border-2 border-black mx-2"
+              onClick={goToPrevious}
             >
-              {index + 1}
+              <NavigateBeforeIcon />
             </button>
-          ))}
-          <button
-            className="bg-white p-1 border-2 border-black mx-2"
-            onClick={goToNext}
-          >
-            <NavigateNextIcon />
-          </button>
-        </section>
+            {pages.map((val, index) => (
+              <button
+                className="bg-white px-3 py-1 border-2 border-black mx-2"
+                key={index}
+                onClick={() => {
+                  pageHandler(index);
+                }}
+              >
+                {index + 1}
+              </button>
+            ))}
+            <button
+              className="bg-white p-1 border-2 border-black mx-2"
+              onClick={goToNext}
+            >
+              <NavigateNextIcon />
+            </button>
+          </section>
+        )}
       </div>
     );
   }

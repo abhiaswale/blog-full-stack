@@ -35,9 +35,9 @@ function Register() {
       });
   };
   return (
-    <div className="w-1/3 flex justify-center items-center shadow-lg flex-col absolute top-52 left-1/3 bg-white p-10 rounded-2xl">
+    <div className="lg:w-1/3 w-full flex justify-center items-center shadow-2xl flex-col absolute lg:top-52 top-32 lg:left-1/3 sm:left-0 bg-white p-10 rounded-2xl">
       <h1 className="text-2xl font-semibold p-4">Register</h1>
-      <div class="w-full border-t-[2px] border-gray-300"></div>
+      <div class="w-full border-gray-300"></div>
       <form className="w-full" onSubmit={submitHandler}>
         <div className="focus-within:text-green-600 focus:outline-none">
           <input

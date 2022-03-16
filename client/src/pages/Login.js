@@ -37,7 +37,7 @@ const Login = () => {
       .then((res) => {
         console.log(res.message);
         if (res.status === 401) {
-          throw new Error("No user with this email found");
+          throw new Error("Invalid credentials");
         }
         if (res.status !== 200 && res.status !== 201) {
           throw new Error("Could not authenticate you");
@@ -88,7 +88,7 @@ const Login = () => {
     navigate("/startpage");
   } else {
     routes = (
-      <div className=" w-1/3 flex justify-center items-center shadow-lg flex-col absolute top-52 left-1/3 bg-white p-8">
+      <div className=" lg:w-1/3 w-full flex justify-center items-center shadow-2xl flex-col absolute lg:top-52 top-32 lg:left-1/3 left-0 bg-white p-8">
         <h1 className="text-2xl font-semibold p-2">Welcome Back</h1>
         <p className="p-2">Enter your credentials to access your account</p>
         <form className="w-full" onSubmit={loginHandler}>

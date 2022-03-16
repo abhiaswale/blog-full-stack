@@ -104,7 +104,7 @@ const PostForm = () => {
       });
   };
   return (
-    <div className="mt-10 flex justify-center">
+    <div className="mt-10 flex justify-center h-screen">
       <ErrorHandler error={msgCtx.message} onClose={msgCtx.clearMessage} />
       <form
         className="flex items-start justify-center flex-col w-1/2 bg-gray-500 p-6"
