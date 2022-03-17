@@ -61,7 +61,7 @@ exports.createPost = (req, res, next) => {
     .then((result) => {
       console.log(res);
       res.status(201).json({
-        message: "Post Created ",
+        message: "Blog posted successfully",
         post: post,
       });
     })

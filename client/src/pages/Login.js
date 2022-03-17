@@ -84,8 +84,7 @@ const Login = () => {
   let routes;
 
   if (isAuth) {
-    // routes = <StartingPage userId={userId} token={token} />;
-    navigate("/startpage");
+    // navigate("/startpage");
   } else {
     routes = (
       <div className=" lg:w-1/3 w-full flex justify-center items-center shadow-2xl flex-col absolute lg:top-52 top-32 lg:left-1/3 left-0 bg-white p-8">

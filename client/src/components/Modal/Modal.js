@@ -2,8 +2,8 @@ import React from "react";
 import ReactDOM from "react-dom";
 const Modal = (props) => {
   return ReactDOM.createPortal(
-    <div className="w-full h-screen bg-black bg-opacity-60 z-20 fixed">
-      <div className="absolute top-1/4 left-1/4 translate-x-52 translate-y-24 bg-white text-black p-4 rounded-lg w-72">
+    <div className="font-Mon w-full h-screen bg-black bg-opacity-60 z-20 fixed">
+      <div className="absolute top-1/4 left-1/4 lg:translate-x-52 translate-x-[-41px] translate-y-24 bg-white text-black p-4 rounded-lg w-72">
         <section className="flex justify-between items-center font-bold text-xl w-full">
           <h3 className="">Alert!!</h3>
           {/* <button onClick={props.handleError}>X</button> */}

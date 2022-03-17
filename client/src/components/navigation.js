@@ -33,7 +33,7 @@ const Nav = () => {
         )}
         {authCtx.isAuth && (
           <a
-            className="p-2 font-medium border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
+            className="lg:m-2 m-2 lg:p-2 p-[4px] lg:font-medium text-sm font-normal border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
             href="/startpage"
           >
             Feed
@@ -41,7 +41,7 @@ const Nav = () => {
         )}
         {user && (
           <button
-            className="p-2 font-medium border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
+            className="lg:m-2 m-2 lg:p-2 p-[4px] lg:font-medium text-sm font-normal border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
             onClick={logoutHandler}
           >
             Logout

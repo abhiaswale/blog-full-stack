@@ -10,9 +10,9 @@ const Post = (props) => {
   };
 
   return (
-    <div className="border-2 border-sky-500  w-full my-3">
+    <div className="border-2 border-sky-500 w-full my-3">
       <li key={props._id} className="list-none p-2">
-        <p className="text-xs my-2">
+        <p className="text-xs lg:my-2">
           Created by{" "}
           {props.creator === authCtx.userId ? (
             <span>you</span>
@@ -21,10 +21,10 @@ const Post = (props) => {
           )}{" "}
           at {props.createdAt.split("T")[0]}
         </p>
-        <h5 className="font-bold text-xl my-2">{props.title}</h5>
+        <h5 className="font-bold lg:text-xl text-base my-2">{props.title}</h5>
         <div className="flex justify-end items-center">
           <button
-            className="p-2 hover:bg-neutral-400 font-semibold transition ease-in-out "
+            className="lg:text-base text-sm p-2 hover:bg-neutral-400 font-semibold transition ease-in-out "
             onClick={() => {
               console.log(props._id.toString());
               navigate(`/post/${props._id}`);
@@ -35,7 +35,7 @@ const Post = (props) => {
           {props.creator === authCtx.userId && (
             <span>
               <button
-                className="p-2 hover:bg-neutral-400 font-semibold"
+                className="lg:text-base text-sm p-2 hover:bg-neutral-400 font-semibold"
                 onClick={() => {
                   editPostHandler(props._id);
                 }}
@@ -43,7 +43,7 @@ const Post = (props) => {
                 EDIT
               </button>
               <button
-                className="p-2 hover:bg-neutral-400 font-semibold text-red-700"
+                className="lg:text-base text-sm p-2 hover:bg-neutral-400 font-semibold text-red-700"
                 onClick={() => {
                   props.onDelete(props._id);
                 }}

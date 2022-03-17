@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
 import Post from "../components/Post/Post";
 import AuthContext from "../store/auth-context";
-import CircularProgress from "@mui/material/CircularProgress";
-import Box from "@mui/material/Box";
 import MessageContext from "../store/message-context";
 import { FcSearch } from "react-icons/fc";
 import NavigateNextIcon from "@mui/icons-material/NavigateNext";
 import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import CancelIcon from "@mui/icons-material/Cancel";
+import Loading from "../components/Loading/Loading";
 
 const StartingPage = (props) => {
   const navigate = useNavigate();
@@ -24,46 +23,43 @@ const StartingPage = (props) => {
   const [searchTerm, setSearchTerm] = useState("");
   const search = useRef("");
   const [searchTouched, setSearchTouched] = useState(false);
+  const [searchError, setSearchError] = useState(null);
   const pages = new Array(numberOfPages).fill(null);
-
-  // const date = new Date();
-  // const wishHour = date.getHours();
-  // let wishMessage;
-  // if (wishHour >= 5 && wishHour < 12) {
-  //   wishMessage = "Good Morning 🌄";
-  // } else if (wishHour >= 12 && wishHour < 17) {
-  //   wishMessage = "Good Afternoon ☀";
-  // } else if (wishHour >= 17 && wishHour < 21) {
-  //   wishMessage = "Good Evening 🌅";
-  // } else {
-  //   wishMessage = "Good Night 🌃";
-  // }
-
   let filterBlog;
   const searchUpdate = () => {
-    filterBlog = posts.filter((p) => {
-      return p.title.toLowerCase().includes(searchTerm.toLowerCase());
-    });
+    console.log("search function called");
+    if (searchTerm.length > 0) {
+      console.log(searchTerm);
+      filterBlog = posts.filter((p) => {
+        return p.title.toLowerCase().includes(searchTerm.toLowerCase());
+      });
+      console.log(filterBlog);
+    }
     if (filterBlog) {
       setPosts(filterBlog);
     }
   };
   const refSet = () => {
-    const temp = search.current.value.length;
-    console.log(temp);
-    console.log(search.current.value.length);
-    if (search.current.value.length !== 0) {
-      setSearchTerm(search.current.value);
+    setSearchTerm(search.current.value);
+    if (searchTerm.length !== 0) {
+      console.log("Search clicked");
+      searchHandler();
       setSearchTouched(true);
-      searchUpdate();
     } else {
-      alert("Enter something to search");
+      setSearchError("Search Cannot be empty");
+    }
+  };
+
+  const searchHandler = () => {
+    console.log(searchTerm);
+    if (searchTerm.length > 0) {
+      searchUpdate();
     }
   };
 
   useEffect(() => {
     if (!authCtx.token || !authCtx.userId) {
-      alert("You have been logged out");
+      msgCtx.catchMessage("You have been logged out! Please Login again");
       navigate("/");
       setLoading(true);
       return;
@@ -181,11 +177,7 @@ const StartingPage = (props) => {
   };
   let content;
   if (loading) {
-    content = (
-      <Box className="h-screen flex justify-center items-center">
-        <CircularProgress />
-      </Box>
-    );
+    content = <Loading />;
   } else {
     content = (
       <div className="min-h-screen">
@@ -198,7 +190,7 @@ const StartingPage = (props) => {
         <div className="mt-18 lg:mx-20 mx-4">
           <form className="w-auto flex lg:justify-center justify-around items-center lg:text-xl text-base">
             <input
-              className="p-2 lg:w-1/3 w-4/5 border-2 border-slate-700 "
+              className="p-[7px] lg:w-1/3 w-7/12 border-2 border-slate-700 "
               type="text"
               placeholder="Enter Status"
               defaultValue={userData.detail.status}
@@ -208,34 +200,38 @@ const StartingPage = (props) => {
             ></input>
             <button
               onClick={updateStatusHandler}
-              className=" ml-2 lg:p-2 p-[2px] border-2 border-slate-700 font-semibold "
+              className=" ml-2  p-[7px] border-2 border-slate-700 font-semibold "
             >
               Update status
             </button>
           </form>
         </div>
-        <div className="flex lg:justify-center justify-between items-center  font-bold p-2 mt-4">
+        <div className="flex lg:justify-center justify-between items-center w-auto font-bold p-2 mt-4 ">
           <button
-            className="bg-cyan-600 rounded-xl lg:p-3 p-[2px] font-bold lg:mx-10 mx-0 lg:text-xl text-sm lg:w-auto w-42"
+            className="bg-cyan-600 rounded-xl lg:p-3 p-[6px] font-bold lg:mx-10 mx-2 lg:text-xl text-sm lg:w-auto lg:w-42 w-4/12"
             onClick={() => {
               navigate("/postform");
             }}
           >
             NEW POST
           </button>
-          <div className="flex justify-center items-center relative">
+          <div className="flex justify-center items-center relative lg:w-72 w-2/3">
             <input
-              className=" shadow appearance-none ml-10 mr-6 p-2 border-2 focus:outline-none focus:shadow-outline"
+              // lg:ml-10 ml-2 lg:mr-6 mr-2 p-2
+              className={`lg:w-full p-2 shadow appearance-none border-2 focus:outline-none focus:shadow-outline ${
+                searchError ? "border-red-500" : ""
+              }`}
               placeholder="Search a Blog"
               ref={search}
               onChange={() => {
                 setSearchTouched(true);
+                setSearchError(false);
               }}
             ></input>
             {searchTouched && (
               <button
                 className="
-                leading-4 absolute right-20"
+                leading-4 absolute right-14"
                 onClick={() => {
                   search.current.value = "";
                   setSearchTouched(false);
@@ -245,14 +241,21 @@ const StartingPage = (props) => {
                 <CancelIcon />
               </button>
             )}
-            <button className="text-3xl absolute right-10" onClick={refSet}>
+            <button
+              className="text-3xl absolute right-4"
+              onClick={() => {
+                refSet();
+              }}
+            >
               <FcSearch />
             </button>
           </div>
         </div>
+        {searchError && <p className="text-center">{searchError}</p>}
+
         <div className=" flex items-center justify-center">
           {posts && posts.length > 0 && (
-            <div className="w-1/2">
+            <div className="lg:w-1/2 w-11/12">
               {posts.map((post) => (
                 <Post
                   key={post._id}
@@ -273,7 +276,7 @@ const StartingPage = (props) => {
           )}
         </div>
         {posts.length > 0 && (
-          <section className="flex justify-center items-center font-normal text-lg my-4">
+          <section className="flex justify-center items-center font-normal lg:text-lg text:sm my-4">
             <button
               className="bg-white p-1 border-2 border-black mx-2"
               onClick={goToPrevious}
