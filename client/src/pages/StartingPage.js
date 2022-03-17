@@ -1,59 +1,58 @@
-import React, { useEffect, useState, useContext, useRef } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import ErrorHandler from "../components/ErrorHandler/ErrorHandler";
 import Post from "../components/Post/Post";
 import AuthContext from "../store/auth-context";
 import MessageContext from "../store/message-context";
 import { FcSearch } from "react-icons/fc";
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import CancelIcon from "@mui/icons-material/Cancel";
 import Loading from "../components/Loading/Loading";
+import Pagination from "../components/Pagination/Pagination";
+
+import NavigateNextIcon from "@mui/icons-material/NavigateNext";
+import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
+import Footer from "../components/Footer/Footer";
 
 const StartingPage = (props) => {
   const navigate = useNavigate();
   const authCtx = useContext(AuthContext);
   const msgCtx = useContext(MessageContext);
+  //USER DATA STATES
   const [userData, setUserData] = useState(null);
   const [status, setStatus] = useState();
+  //LOADING STATES
   const [loading, setLoading] = useState(true);
+  //POST
   const [posts, setPosts] = useState([]);
+  //  PAGINATION STATES
   const [pageNumber, setPageNumber] = useState(1);
   const [numberOfPages, setNumberOfPages] = useState(1);
+  //SEARCH STATES
   const [searchTerm, setSearchTerm] = useState("");
-  const search = useRef("");
   const [searchTouched, setSearchTouched] = useState(false);
   const [searchError, setSearchError] = useState(null);
+
+  // const pages = new Array(props.numberOfPages).fill(null);
   const pages = new Array(numberOfPages).fill(null);
+
   let filterBlog;
   const searchUpdate = () => {
-    console.log("search function called");
     if (searchTerm.length > 0) {
-      console.log(searchTerm);
       filterBlog = posts.filter((p) => {
         return p.title.toLowerCase().includes(searchTerm.toLowerCase());
       });
-      console.log(filterBlog);
     }
     if (filterBlog) {
       setPosts(filterBlog);
     }
   };
+
   const refSet = () => {
-    setSearchTerm(search.current.value);
     if (searchTerm.length !== 0) {
-      console.log("Search clicked");
-      searchHandler();
+      searchUpdate();
       setSearchTouched(true);
     } else {
       setSearchError("Search Cannot be empty");
-    }
-  };
-
-  const searchHandler = () => {
-    console.log(searchTerm);
-    if (searchTerm.length > 0) {
-      searchUpdate();
     }
   };
 
@@ -73,16 +72,15 @@ const StartingPage = (props) => {
       },
     })
       .then((res) => {
+        console.log(res);
         return res.json();
       })
       .then((data) => {
         setUserData(data);
         setStatus(data.detail.status);
-        console.log(data);
         setLoading(false);
       })
       .catch((err) => {
-        console.log(err);
         msgCtx.catchMessage(err);
       });
   }, [authCtx.token]);
@@ -101,16 +99,14 @@ const StartingPage = (props) => {
         return res.json();
       })
       .then((data) => {
-        console.log(data);
         setPosts(data.data);
         setNumberOfPages(data.pages);
-        console.log(data.data);
       })
       .catch((err) => {
-        console.log(err);
         msgCtx.catchMessage(err);
       });
   };
+
   useEffect(() => {
     postListFetch();
   }, [pageNumber]);
@@ -221,19 +217,20 @@ const StartingPage = (props) => {
               className={`lg:w-full p-2 shadow appearance-none border-2 focus:outline-none focus:shadow-outline ${
                 searchError ? "border-red-500" : ""
               }`}
+              value={searchTerm}
               placeholder="Search a Blog"
-              ref={search}
-              onChange={() => {
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
                 setSearchTouched(true);
                 setSearchError(false);
               }}
             ></input>
-            {searchTouched && (
+            {searchTouched && searchTerm.length > 0 && (
               <button
                 className="
                 leading-4 absolute right-14"
                 onClick={() => {
-                  search.current.value = "";
+                  setSearchTerm("");
                   setSearchTouched(false);
                   postListFetch();
                 }}
@@ -252,7 +249,6 @@ const StartingPage = (props) => {
           </div>
         </div>
         {searchError && <p className="text-center">{searchError}</p>}
-
         <div className=" flex items-center justify-center">
           {posts && posts.length > 0 && (
             <div className="lg:w-1/2 w-11/12">
@@ -276,36 +272,21 @@ const StartingPage = (props) => {
           )}
         </div>
         {posts.length > 0 && (
-          <section className="flex justify-center items-center font-normal lg:text-lg text:sm my-4">
-            <button
-              className="bg-white p-1 border-2 border-black mx-2"
-              onClick={goToPrevious}
-            >
-              <NavigateBeforeIcon />
-            </button>
-            {pages.map((val, index) => (
-              <button
-                className="bg-white px-3 py-1 border-2 border-black mx-2"
-                key={index}
-                onClick={() => {
-                  pageHandler(index);
-                }}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              className="bg-white p-1 border-2 border-black mx-2"
-              onClick={goToNext}
-            >
-              <NavigateNextIcon />
-            </button>
-          </section>
+          <Pagination
+            numberOfPages={numberOfPages}
+            setPageNumber={setPageNumber}
+            currentPage={pageNumber}
+          />
         )}
       </div>
     );
   }
-  return <div>{content}</div>;
+  return (
+    <div>
+      <div>{content}</div>
+      <Footer />
+    </div>
+  );
 };
 
 export default StartingPage;

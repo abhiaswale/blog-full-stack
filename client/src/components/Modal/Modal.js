@@ -12,13 +12,13 @@ const Modal = (props) => {
         <section className="my-4">{props.children}</section>
         <span>
           <button
-            className="text-lg px-2 mr-2 hover:bg-cyan-400 border-2 rounded-lg border-black"
+            className="text-lg px-2 mr-2 hover:bg-sky-500 hover:text-white transition-all ease-in-out delay-75 border-2 rounded-lg border-black"
             onClick={props.handleError}
           >
             Ok
           </button>
           <button
-            className="text-lg px-2 mx-2 hover:bg-cyan-400 border-2  rounded-lg border-black"
+            className="text-lg px-2 mx-2 hover:bg-sky-500 hover:text-white transition-all ease-in-out delay-75 border-2  rounded-lg border-black"
             onClick={props.handleError}
           >
             Cancel

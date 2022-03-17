@@ -8,6 +8,7 @@ import SinglePost from "./components/SinglePost/SinglePost";
 import PostForm from "./components/PostFrom/PostForm";
 function App() {
   return (
+    // <Layout>
     <div className="font-Mon  w-full h-auto min-h-full  relative">
       <Nav />
       <Routes>
@@ -18,6 +19,7 @@ function App() {
         <Route path="/post/:postId" exact element={<SinglePost />} />
       </Routes>
     </div>
+    // </Layout>
   );
 }
 

@@ -4,6 +4,9 @@ const bodyParser = require("body-parser");
 const multer = require("multer");
 const { v4: uuid } = require("uuid");
 const app = express();
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/user");
@@ -51,7 +54,7 @@ mongoose
   )
   .then((result) => {
     console.log("connected to db");
-    app.listen(8080);
+    app.listen(process.env.PORT || 8080);
   })
   .catch((err) => {
     console.log(err);

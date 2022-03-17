@@ -75,7 +75,7 @@ exports.createPost = (req, res, next) => {
 
 exports.getPosts = (req, res, next) => {
   let currentPage = req.query.page || 1;
-  const PAGE_SIZE = 5;
+  const PAGE_SIZE = 4;
   let totalPages;
   Post.find()
     .countDocuments()

@@ -1,5 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Footer from "../components/Footer/Footer";
 import AuthContext from "../store/auth-context";
 import { TestCredentials } from "../test";
 
@@ -143,7 +144,7 @@ const Login = () => {
             </p>
           </div>
         </form>
-        {/* <button onClick={newUserHandler}>New user</button> */}
+        <Footer />
       </div>
     );
   }
