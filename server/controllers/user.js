@@ -160,6 +160,9 @@ exports.updatePost = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
+      if (imageUrl !== post.imageUrl) {
+        clearImage(post.imageUrl);
+      }
       post.title = updatedTitle;
       post.imageUrl = imageUrl;
       post.description = updatedDescription;
