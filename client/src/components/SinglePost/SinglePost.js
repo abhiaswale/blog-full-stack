@@ -9,7 +9,7 @@ const SinglePost = () => {
   const [postImage, setPostImage] = useState();
   const [loading, setLoading] = useState(true);
   useEffect(() => {
-    fetch(`http://localhost:8080/user/post/${postId}`, {
+    fetch(`https://blog-app05.herokuapp.com/user/post/${postId}`, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -21,13 +21,13 @@ const SinglePost = () => {
       .then((post) => {
         console.log(post.post);
         setPostItem(post.post);
-        setPostImage("http://localhost:8080/" + post.post.imageUrl);
+        setPostImage("https://blog-app05.herokuapp.com/" + post.post.imageUrl);
         setLoading(false);
       })
       .catch((err) => {
         console.log(err);
       });
-  }, []);
+  }, [postId]);
 
   let content;
   if (loading) {
@@ -42,7 +42,11 @@ const SinglePost = () => {
           {postItem.description}
         </p>
         <div className="flex justify-center items-center my-4">
-          <img className="lg:w-1/3 h-auto" src={postImage} alt="image"></img>
+          <img
+            className="lg:w-1/2 lg:h-58"
+            src={postImage}
+            alt="PostImage"
+          ></img>
         </div>
         <div className="flex justify-center items-center">
           <button

@@ -9,7 +9,7 @@ function Register() {
   const navigate = useNavigate();
   const submitHandler = async (e) => {
     e.preventDefault();
-    fetch("http://localhost:8080/auth/register", {
+    fetch("https://blog-app05.herokuapp.com/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -35,8 +35,9 @@ function Register() {
         alert(err);
       });
   };
-  return (
-    <div className="lg:w-1/3 w-full flex justify-center items-center shadow-2xl flex-col absolute lg:top-52 top-32 lg:left-1/3 sm:left-0 bg-white p-10 rounded-2xl">
+
+  let content = (
+    <div className="lg:w-1/3 flex justify-center items-center shadow-2xl flex-col bg-white p-8 my-28">
       <h1 className="text-2xl font-semibold p-4">Register</h1>
       <div class="w-full border-gray-300"></div>
       <form className="w-full" onSubmit={submitHandler}>
@@ -88,6 +89,11 @@ function Register() {
           </p>
         </div>
       </form>
+    </div>
+  );
+  return (
+    <div>
+      <section className="flex justify-center items-center">{content}</section>
       <Footer />
     </div>
   );

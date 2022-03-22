@@ -11,7 +11,6 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [isAuth, setIsAuth] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
-  const [touched, setTouched] = useState(false);
 
   const loginHandler = async (e) => {
     e.preventDefault();
@@ -27,7 +26,7 @@ const Login = () => {
       setErrorMsg("Password must be atleast 5 characters Long");
       return;
     }
-    fetch("http://localhost:8080/auth/login", {
+    fetch("https://blog-app05.herokuapp.com/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -62,7 +61,6 @@ const Login = () => {
         console.log(err);
         setIsAuth(false);
         setErrorMsg(err.message);
-        setTouched(true);
       });
   };
 
@@ -73,22 +71,21 @@ const Login = () => {
     }, miliseconds);
   };
 
-  // const newUserHandler = () => {
-  //   navigate("/register");
-  // };
+  //
 
   const setTestCredentials = () => {
     setEmail(TestCredentials.email);
     setPassword(TestCredentials.password);
   };
 
-  let routes;
+  let content;
 
   if (isAuth) {
     // navigate("/startpage");
   } else {
-    routes = (
-      <div className=" lg:w-1/3 w-full flex justify-center items-center shadow-2xl flex-col absolute lg:top-52 top-32 lg:left-1/3 left-0 bg-white p-8">
+    content = (
+      // <div className=" lg:w-1/3 w-full flex justify-center items-center shadow-2xl flex-col absolute lg:top-52 top-32 lg:left-1/3 left-0 bg-white p-8">
+      <div className="lg:w-1/3 flex justify-center items-center shadow-2xl flex-col bg-white p-8 my-28">
         <h1 className="text-2xl font-semibold p-2">Welcome Back</h1>
         <p className="p-2">Enter your credentials to access your account</p>
         <form className="w-full" onSubmit={loginHandler}>
@@ -116,7 +113,6 @@ const Login = () => {
               onChange={(e) => {
                 setPassword(e.target.value);
                 setErrorMsg(null);
-                setTouched(false);
               }}
               className={` w-full my-2 shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
                 errorMsg && errorMsg.toLowerCase().includes("password")
@@ -144,11 +140,15 @@ const Login = () => {
             </p>
           </div>
         </form>
-        <Footer />
       </div>
     );
   }
-  return <div>{routes}</div>;
+  return (
+    <div>
+      <section className="flex justify-center items-center">{content}</section>
+      <Footer />
+    </div>
+  );
 };
 
 export default Login;

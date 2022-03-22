@@ -41,7 +41,7 @@ exports.createPost = (req, res, next) => {
   }
   const imageUrl = req.file.path.replace("\\", "/");
   console.log(title, description);
-  console.log(req.file);
+  console.log(imageUrl);
   let creator;
   const post = new Post({
     title: title,
@@ -134,10 +134,13 @@ exports.updatePost = (req, res, next) => {
   }
   const updatedTitle = req.body.title;
   const updatedDescription = req.body.description;
-  let imageUrl = req.body.image;
-  console.log(imageUrl);
+  let imageUrl;
+  // console.log(imageUrl[0].toString());
   if (req.file) {
     imageUrl = req.file.path.replace("\\", "/");
+  } else {
+    let imgg = req.body.image;
+    imageUrl = imgg[0];
   }
 
   if (!imageUrl) {

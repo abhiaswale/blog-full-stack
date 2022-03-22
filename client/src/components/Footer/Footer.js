@@ -13,17 +13,29 @@ const Footer = () => {
       </div>
       <div className="flex justify-center items-center flex-row my-6">
         <div className="text-neutral-500 hover:text-cyan-500 text-3xl mx-4 transition-all ease-in-out delay-150">
-          <a href="https://github.com/abhiaswale" target="_blank">
+          <a
+            href="https://github.com/abhiaswale"
+            target="_blank"
+            rel="noreferrer"
+          >
             <AiFillGithub />
           </a>
         </div>
         <div className="text-neutral-500 hover:text-cyan-500 text-3xl mx-4 transition-all ease-in-out delay-150">
-          <a href="https://twitter.com/_abhi42">
+          <a
+            href="https://twitter.com/_abhi42"
+            target="_blank"
+            rel="noreferrer"
+          >
             <AiFillTwitterCircle />
           </a>
         </div>
         <div className="text-neutral-500 hover:text-cyan-500 text-3xl mx-4 transition-all ease-in-out delay-150">
-          <a href="https://www.linkedin.com/in/abhishek-aswale-110b931b3/">
+          <a
+            href="https://www.linkedin.com/in/abhishek-aswale-110b931b3/"
+            target="_blank"
+            rel="noreferrer"
+          >
             <AiFillLinkedin />
           </a>
         </div>

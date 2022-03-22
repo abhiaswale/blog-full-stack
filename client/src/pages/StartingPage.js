@@ -9,8 +9,6 @@ import CancelIcon from "@mui/icons-material/Cancel";
 import Loading from "../components/Loading/Loading";
 import Pagination from "../components/Pagination/Pagination";
 
-import NavigateNextIcon from "@mui/icons-material/NavigateNext";
-import NavigateBeforeIcon from "@mui/icons-material/NavigateBefore";
 import Footer from "../components/Footer/Footer";
 
 const StartingPage = (props) => {
@@ -22,6 +20,7 @@ const StartingPage = (props) => {
   const [status, setStatus] = useState();
   //LOADING STATES
   const [loading, setLoading] = useState(true);
+  const [postsLoading, setPostsLoading] = useState(true);
   //POST
   const [posts, setPosts] = useState([]);
   //  PAGINATION STATES
@@ -33,7 +32,6 @@ const StartingPage = (props) => {
   const [searchError, setSearchError] = useState(null);
 
   // const pages = new Array(props.numberOfPages).fill(null);
-  const pages = new Array(numberOfPages).fill(null);
 
   let filterBlog;
   const searchUpdate = () => {
@@ -66,7 +64,7 @@ const StartingPage = (props) => {
     if (localStorage.getItem("expiryDate") <= new Date()) {
       authCtx.logout();
     }
-    fetch("http://localhost:8080/user/detail", {
+    fetch("https://blog-app05.herokuapp.com/user/detail", {
       headers: {
         Authorization: "Bearer " + authCtx.token,
       },
@@ -81,12 +79,14 @@ const StartingPage = (props) => {
         setLoading(false);
       })
       .catch((err) => {
+        console.log(err);
         msgCtx.catchMessage(err);
       });
   }, [authCtx.token]);
 
   const postListFetch = async () => {
-    fetch("http://localhost:8080/user/post?page=" + pageNumber, {
+    setPostsLoading(true);
+    fetch("https://blog-app05.herokuapp.com/user/post?page=" + pageNumber, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + authCtx.token,
@@ -101,6 +101,7 @@ const StartingPage = (props) => {
       .then((data) => {
         setPosts(data.data);
         setNumberOfPages(data.pages);
+        setPostsLoading(false);
       })
       .catch((err) => {
         msgCtx.catchMessage(err);
@@ -111,20 +112,9 @@ const StartingPage = (props) => {
     postListFetch();
   }, [pageNumber]);
 
-  //PAGINATION LOGIC
-  const pageHandler = (i) => {
-    setPageNumber(i + 1);
-  };
-  const goToPrevious = () => {
-    setPageNumber(Math.max(1, pageNumber - 1));
-  };
-  const goToNext = () => {
-    setPageNumber(Math.min(numberOfPages, pageNumber + 1));
-  };
-
   const deleteHandler = (id) => {
     console.log(id);
-    fetch(`http://localhost:8080/user/post/${id}`, {
+    fetch(`https://blog-app05.herokuapp.com/user/post/${id}`, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -155,7 +145,7 @@ const StartingPage = (props) => {
       msgCtx.catchMessage("Please update current status and try again");
       return;
     }
-    const res = await fetch("http://localhost:8080/user/status", {
+    const res = await fetch("https://blog-app05.herokuapp.com/user/status", {
       method: "PUT",
       headers: {
         Authorization: "Bearer " + authCtx.token,
@@ -209,7 +199,7 @@ const StartingPage = (props) => {
               navigate("/postform");
             }}
           >
-            NEW POST
+            NEW BLOG
           </button>
           <div className="flex justify-center items-center relative lg:w-72 w-2/3">
             <input
@@ -249,28 +239,32 @@ const StartingPage = (props) => {
           </div>
         </div>
         {searchError && <p className="text-center">{searchError}</p>}
-        <div className=" flex items-center justify-center">
-          {posts && posts.length > 0 && (
-            <div className="lg:w-1/2 w-11/12">
-              {posts.map((post) => (
-                <Post
-                  key={post._id}
-                  _id={post._id}
-                  title={post.title}
-                  description={post.description}
-                  creator={post.creator._id}
-                  creatorName={post.creator.name}
-                  createdAt={post.createdAt}
-                  name={post.name}
-                  onDelete={deleteHandler}
-                />
-              ))}
-            </div>
-          )}
-          {posts.length === 0 && (
-            <p className="font-semibold text-xl my-10">No Posts Found.</p>
-          )}
-        </div>
+        {postsLoading ? (
+          <Loading />
+        ) : (
+          <div className="flex justify-center h-[35rem]">
+            {posts && posts.length > 0 && (
+              <div className="lg:w-1/2 w-11/12">
+                {posts.map((post) => (
+                  <Post
+                    key={post._id}
+                    _id={post._id}
+                    title={post.title}
+                    description={post.description}
+                    creator={post.creator._id}
+                    creatorName={post.creator.name}
+                    createdAt={post.createdAt}
+                    name={post.name}
+                    onDelete={deleteHandler}
+                  />
+                ))}
+              </div>
+            )}
+            {posts.length === 0 && (
+              <p className="font-semibold text-xl my-10">No Posts Found.</p>
+            )}
+          </div>
+        )}
         {posts.length > 0 && (
           <Pagination
             numberOfPages={numberOfPages}
