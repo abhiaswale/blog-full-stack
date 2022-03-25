@@ -8,11 +8,11 @@ const PostForm = () => {
   const msgCtx = useContext(MessageContext);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
-  const [imgFile, setImgFile] = useState("");
   const [image, setImage] = useState("");
   const [preview, setPreview] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [errorMsg, setErrorMsg] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -20,7 +20,7 @@ const PostForm = () => {
   const editPostId = location.state;
   const startEditPost = (postId) => {
     setIsEditing(true);
-    fetch(`https://blog-app05.herokuapp.com/user/post/${postId}`, {
+    fetch(`http://localhost:8080/user/post/${postId}`, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -35,9 +35,6 @@ const PostForm = () => {
       .then((post) => {
         setTitle(post.post.title);
         setDescription(post.post.description);
-        // setImage(post.post.imageUrl);
-        setImgFile(post.post.imageUrl);
-        console.log(post.post);
       })
       .catch((err) => {
         console.log(err);
@@ -52,7 +49,6 @@ const PostForm = () => {
   }, []);
 
   const fileChangeHandler = (e) => {
-    console.log(e.target.files[0]);
     if (e.target && e.target.files[0]) {
       setImage(e.target.files[0]);
     }
@@ -75,24 +71,20 @@ const PostForm = () => {
       setErrorMsg("Title cannot be empty");
       return;
     }
-    console.log(imgFile);
-
     if (!description) {
       setErrorMsg("Description cannot be empty");
       return;
     }
+    setIsPosting(true);
     const formData = new FormData();
     formData.append("title", title);
     formData.append("description", description);
-    if (isEditing && !image) {
-      formData.append("image", imgFile);
-    }
     formData.append("image", image);
 
-    let url = "https://blog-app05.herokuapp.com/user/post";
+    let url = "http://localhost:8080/user/post";
     let method = "POST";
     if (isEditing) {
-      url = `https://blog-app05.herokuapp.com/user/post/${editPostId}`;
+      url = `http://localhost:8080/user/post/${editPostId}`;
       method = "PUT";
     }
     fetch(url, {
@@ -103,14 +95,13 @@ const PostForm = () => {
       },
     })
       .then((resp) => {
+        setIsPosting(false);
         if (resp.status !== 200 && resp.status !== 201) {
           throw new Error("Something went wrong, please try again");
         }
         return resp.json();
       })
       .then((data) => {
-        console.log(data);
-        console.log(data.message);
         msgCtx.catchMessage(data.message);
         navigate("/startpage");
       })
@@ -127,7 +118,11 @@ const PostForm = () => {
         onSubmit={submitHandler}
       >
         <h3 className="font-bold lg:text-2xl text-xl">Post a blog</h3>
-        {errorMsg && <p>{errorMsg}</p>}
+        {errorMsg && (
+          <p className="border-[2px] border-[#ed2020] bg-[#ff6262] bg-opacity-50 shadow-inner rounded-lg p-[4px] my-4">
+            {errorMsg}
+          </p>
+        )}
         <label className="font-medium lg:text-base text-sm  w-full mt-4">
           TITLE
         </label>
@@ -193,6 +188,7 @@ const PostForm = () => {
             Cancel
           </button>
         </div>
+        {isPosting && <p className="my-2 ">Posting...</p>}
       </form>
     </div>
   );

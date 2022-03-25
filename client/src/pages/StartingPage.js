@@ -70,7 +70,6 @@ const StartingPage = (props) => {
       },
     })
       .then((res) => {
-        console.log(res);
         return res.json();
       })
       .then((data) => {
@@ -113,7 +112,6 @@ const StartingPage = (props) => {
   }, [pageNumber]);
 
   const deleteHandler = (id) => {
-    console.log(id);
     fetch(`https://blog-app05.herokuapp.com/user/post/${id}`, {
       method: "DELETE",
       headers: {
@@ -140,7 +138,6 @@ const StartingPage = (props) => {
 
   const updateStatusHandler = async (e) => {
     e.preventDefault();
-    console.log(userData.detail.status);
     if (userData.detail.status === status) {
       msgCtx.catchMessage("Please update current status and try again");
       return;
@@ -157,9 +154,7 @@ const StartingPage = (props) => {
     });
 
     const data = await res.json();
-    console.log(data);
     msgCtx.catchMessage(data.message);
-    console.log(status);
   };
   let content;
   if (loading) {
@@ -194,7 +189,7 @@ const StartingPage = (props) => {
         </div>
         <div className="flex lg:justify-center justify-between items-center w-auto font-bold p-2 mt-4 ">
           <button
-            className="bg-cyan-600 rounded-xl lg:p-3 p-[6px] font-bold lg:mx-10 mx-2 lg:text-xl text-sm lg:w-auto lg:w-42 w-4/12"
+            className="bg-teal-500 rounded-xl lg:p-[6px] p-[6px] py-[10px] font-bold lg:mx-10 mx-2 lg:text-xl text-sm lg:w-auto lg:w-42 w-4/12"
             onClick={() => {
               navigate("/postform");
             }}
@@ -203,7 +198,6 @@ const StartingPage = (props) => {
           </button>
           <div className="flex justify-center items-center relative lg:w-72 w-2/3">
             <input
-              // lg:ml-10 ml-2 lg:mr-6 mr-2 p-2
               className={`lg:w-full p-2 shadow appearance-none border-2 focus:outline-none focus:shadow-outline ${
                 searchError ? "border-red-500" : ""
               }`}

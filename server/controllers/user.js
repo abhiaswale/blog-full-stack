@@ -1,6 +1,7 @@
 const User = require("../models/user");
 const Post = require("../models/post");
 const fs = require("fs");
+const cloudinary = require("../util/cloudinary");
 const path = require("path");
 const { validationResult } = require("express-validator");
 const user = require("../models/user");
@@ -39,19 +40,27 @@ exports.createPost = (req, res, next) => {
     error.statusCode = 422;
     throw error;
   }
-  const imageUrl = req.file.path.replace("\\", "/");
-  console.log(title, description);
-  console.log(imageUrl);
-  let creator;
-  const post = new Post({
-    title: title,
-    description: description,
-    imageUrl: imageUrl,
-    creator: req.userId,
-  });
-  post
-    .save()
+  let cImageUrl, c_id, post;
+  cloudinary.uploader
+    .upload(req.file.path)
     .then((result) => {
+      console.log(result);
+      cImageUrl = result.secure_url;
+      c_id = result.public_id;
+    })
+    .then(() => {
+      post = new Post({
+        title: title,
+        description: description,
+        imageUrl: cImageUrl,
+        cloudinary_id: c_id,
+        creator: req.userId,
+      });
+      return post.save();
+    })
+
+    .then((result) => {
+      console.log(req.userId);
       return User.findById(req.userId);
     })
     .then((user) => {
@@ -122,7 +131,7 @@ exports.getPost = (req, res, next) => {
     });
 };
 
-exports.updatePost = (req, res, next) => {
+exports.updatePost = async (req, res, next) => {
   const postId = req.params.postId;
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -134,22 +143,10 @@ exports.updatePost = (req, res, next) => {
   }
   const updatedTitle = req.body.title;
   const updatedDescription = req.body.description;
-  let imageUrl;
-  // console.log(imageUrl[0].toString());
-  if (req.file) {
-    imageUrl = req.file.path.replace("\\", "/");
-  } else {
-    let imgg = req.body.image;
-    imageUrl = imgg[0];
-  }
-
-  if (!imageUrl) {
-    const error = new Error("No file picked");
-    error.statusCode = 422;
-    throw error;
-  }
+  let postt;
   Post.findById(postId)
     .then((post) => {
+      postt = post;
       if (!post) {
         const error = new Error("Post does not exist!");
         error.statusCode = 402;
@@ -160,13 +157,23 @@ exports.updatePost = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
-      if (imageUrl !== post.imageUrl) {
-        clearImage(post.imageUrl);
+      const prevImg = post.imageUrl;
+      const prevCloudId = post.cloudinary_id;
+      if (req.file) {
+        cloudinary.uploader.destroy(post.cloudinary_id);
+        return cloudinary.uploader.upload(req.file.path).then((respo) => {
+          post.imageUrl = respo.secure_url;
+          post.cloudinary_id = respo.public_id;
+        });
+      } else {
+        post.imageUrl = prevImg;
+        post.cloudinary_id = prevCloudId;
       }
-      post.title = updatedTitle;
-      post.imageUrl = imageUrl;
-      post.description = updatedDescription;
-      return post.save();
+    })
+    .then((data) => {
+      postt.title = updatedTitle;
+      postt.description = updatedDescription;
+      return postt.save();
     })
     .then((result) => {
       res
@@ -195,7 +202,8 @@ exports.deletePost = (req, res, next) => {
         error.statusCode = 401;
         throw error;
       }
-      clearImage(post.imageUrl);
+      // clearImage(post.imageUrl);
+      cloudinary.uploader.destroy(post.cloudinary_id);
       return Post.findByIdAndRemove(postId);
     })
     .then((result) => {

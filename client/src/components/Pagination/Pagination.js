@@ -30,7 +30,7 @@ const Pagination = (props) => {
         {pages.map((val, index) => (
           <button
             className={`bg-white px-3 py-1 border-2 border-black mx-2 ${
-              index + 1 === props.currentPage ? "bg-cyan-800" : ""
+              index + 1 === props.currentPage ? "bg-cyan-300" : ""
             }`}
             key={index}
             onClick={() => {

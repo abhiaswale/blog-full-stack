@@ -13,7 +13,7 @@ export const AuthContextProvider = (props) => {
   const [token, setToken] = useState(initialToken);
   const initialUserId = localStorage.getItem("userId");
   const [userId, setUserId] = useState(initialUserId);
-  const isLoggedIn = !!token;
+  let isLoggedIn = !!token;
 
   const userHandler = (userId) => {
     setUserId(userId);
@@ -29,6 +29,7 @@ export const AuthContextProvider = (props) => {
     localStorage.removeItem("token");
     localStorage.removeItem("userId");
     localStorage.removeItem("expiryDate");
+    isLoggedIn = false;
   };
 
   const contextValue = {

@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Footer from "../components/Footer/Footer";
+import Loading from "../components/Loading/Loading";
 import AuthContext from "../store/auth-context";
 import { TestCredentials } from "../test";
 
@@ -10,7 +11,10 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isAuth, setIsAuth] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState(null);
+  const location = useLocation();
+  const registerMsg = location.state;
 
   const loginHandler = async (e) => {
     e.preventDefault();
@@ -26,6 +30,7 @@ const Login = () => {
       setErrorMsg("Password must be atleast 5 characters Long");
       return;
     }
+    setLoading(true);
     fetch("https://blog-app05.herokuapp.com/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -35,7 +40,6 @@ const Login = () => {
       }),
     })
       .then((res) => {
-        console.log(res.message);
         if (res.status === 401) {
           throw new Error("Invalid credentials");
         }
@@ -45,7 +49,6 @@ const Login = () => {
         return res.json();
       })
       .then((data) => {
-        console.log(data);
         authCtx.login(data.token);
         authCtx.userIdHandler(data.userId);
         const remainingMiliseconds = 60 * 60 * 1000;
@@ -53,12 +56,12 @@ const Login = () => {
         localStorage.setItem("expiryDate", expiryDate);
         autoLogoutHandler(remainingMiliseconds);
         setIsAuth(true);
+        setLoading(false);
       })
       .then(() => {
         navigate("/startpage");
       })
       .catch((err) => {
-        console.log(err);
         setIsAuth(false);
         setErrorMsg(err.message);
       });
@@ -66,12 +69,9 @@ const Login = () => {
 
   const autoLogoutHandler = (miliseconds) => {
     setTimeout(() => {
-      console.log("Logout executed");
       authCtx.logout();
     }, miliseconds);
   };
-
-  //
 
   const setTestCredentials = () => {
     setEmail(TestCredentials.email);
@@ -84,10 +84,16 @@ const Login = () => {
     // navigate("/startpage");
   } else {
     content = (
-      // <div className=" lg:w-1/3 w-full flex justify-center items-center shadow-2xl flex-col absolute lg:top-52 top-32 lg:left-1/3 left-0 bg-white p-8">
       <div className="lg:w-1/3 flex justify-center items-center shadow-2xl flex-col bg-white p-8 my-28">
         <h1 className="text-2xl font-semibold p-2">Welcome Back</h1>
-        <p className="p-2">Enter your credentials to access your account</p>
+        {registerMsg && (
+          <p className="border-[2px] border-[#00eb8d] bg-[#00eb8d] bg-opacity-50 shadow-inner rounded-lg p-[4px]">
+            {registerMsg}
+          </p>
+        )}
+        <p className="p-2 text-center">
+          Enter your credentials to access your account
+        </p>
         <form className="w-full" onSubmit={loginHandler}>
           <div className="focus-within:text-green-600 focus:outline-none">
             <input
@@ -124,7 +130,7 @@ const Login = () => {
           <p className=" text-red-400 font-semibold text-center">{errorMsg}</p>
           <div className="flex justify-center items-center flex-col my-2 w-full">
             <button
-              className="font-semibold p-3 bg-blue-600 rounded-lg hover:bg-purple-400"
+              className="font-semibold p-3 bg-cyan-300 rounded-lg hover:bg-purple-400 transition-all ease-in-out delay-100"
               type="submit"
             >
               Login
@@ -145,7 +151,12 @@ const Login = () => {
   }
   return (
     <div>
-      <section className="flex justify-center items-center">{content}</section>
+      {!loading && (
+        <section className="flex justify-center items-center">
+          {content}
+        </section>
+      )}
+      {loading && <Loading />}
       <Footer />
     </div>
   );

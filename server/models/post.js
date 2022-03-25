@@ -14,10 +14,14 @@ const postSchema = new Schema(
     imageUrl: {
       type: String,
     },
+    cloudinary_id: {
+      type: String,
+      required: false,
+    },
     creator: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      required: false,
     },
   },
   { timestamps: true }

@@ -11,7 +11,7 @@ const Nav = () => {
     navigate("/");
   };
   return (
-    <div className="flex justify-between items-center h-16 bg-gray-600">
+    <div className="flex justify-between items-center h-16 bg-teal-500">
       <h3 className="lg:text-3xl text-lg lg:mx-8 mx-4 font-bold">Blogger.</h3>
       <nav className=" lg:mx-8 mx-2 flex lg:justify-around justify-end items-center lg:w-1/6 w-1/2">
         {!authCtx.isAuth && (
@@ -39,7 +39,7 @@ const Nav = () => {
             Feed
           </a>
         )}
-        {user && (
+        {authCtx.isAuth && user && (
           <button
             className="lg:m-2 m-2 lg:p-2 p-[4px] lg:font-medium text-sm font-normal border-2 border-b-zinc-50 rounded-md text-white hover:bg-white hover:text-black transition-all ease-in-out delay-75"
             onClick={logoutHandler}

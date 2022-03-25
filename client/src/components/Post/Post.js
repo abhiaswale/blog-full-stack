@@ -10,7 +10,7 @@ const Post = (props) => {
   };
 
   return (
-    <div className="border-2 border-sky-500 w-full my-3">
+    <div className="border-2 border-teal-500 w-full my-3">
       <li key={props._id} className="list-none p-2">
         <p className="text-xs lg:my-2">
           Created by{" "}
@@ -26,7 +26,6 @@ const Post = (props) => {
           <button
             className="lg:text-base text-sm p-2 hover:bg-neutral-400 font-semibold transition ease-in-out "
             onClick={() => {
-              console.log(props._id.toString());
               navigate(`/post/${props._id}`);
             }}
           >
