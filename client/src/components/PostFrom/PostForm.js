@@ -20,7 +20,7 @@ const PostForm = () => {
   const editPostId = location.state;
   const startEditPost = (postId) => {
     setIsEditing(true);
-    fetch(`http://localhost:8080/user/post/${postId}`, {
+    fetch(`https://blog-app05.herokuapp.com/user/post/${postId}`, {
       method: "GET",
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token"),
@@ -81,10 +81,10 @@ const PostForm = () => {
     formData.append("description", description);
     formData.append("image", image);
 
-    let url = "http://localhost:8080/user/post";
+    let url = "https://blog-app05.herokuapp.com/user/post";
     let method = "POST";
     if (isEditing) {
-      url = `http://localhost:8080/user/post/${editPostId}`;
+      url = `https://blog-app05.herokuapp.com/user/post/${editPostId}`;
       method = "PUT";
     }
     fetch(url, {

@@ -46,9 +46,7 @@ app.use("/auth", authRoutes);
 app.use("/user", userRoutes);
 
 mongoose
-  .connect(
-    "mongodb+srv://abhi:12345@cluster0.qxhox.mongodb.net/newApp?retryWrites=true&w=majority"
-  )
+  .connect(process.env.MONGO_URI)
   .then((result) => {
     console.log("connected to db");
     app.listen(process.env.PORT || 8080);
